@@ -53,8 +53,8 @@ public class Main {
 ////
 //        taller.addSecretario(s1);        
 //        taller.addGerente(g1);
-
-         
+//
+//         
 //        taller.AddVehiculoAntendido(veh1);
 //        taller.AddVehiculoAntendido(veh2);
 //        taller.AddVehiculoAntendido(veh3);

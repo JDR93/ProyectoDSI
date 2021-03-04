@@ -1,6 +1,7 @@
 package Source;
 
 import Persistence.ClienteJpaController;
+import Persistence.CompraJpaController;
 import Persistence.ConsumoJpaController;
 import Persistence.GerenteJpaController;
 import Persistence.MantenimientoJpaController;
@@ -50,6 +51,8 @@ public class Taller implements Serializable {
     private MecanicoJpaController mecanicoJpaController = new MecanicoJpaController(factory);
     private SecretarioJpaController secretarioJpaController = new SecretarioJpaController(factory);
     private GerenteJpaController gerenteJpaController = new GerenteJpaController(factory);
+
+    private CompraJpaController compraJpaController = new CompraJpaController(factory);
 
 //    private ArrayList<Vehiculo> vehiculosAtendidos = new ArrayList<>();
 //    private ArrayList<Mantenimiento> Mpendientes = new ArrayList<>();
@@ -356,7 +359,6 @@ public class Taller implements Serializable {
 ////        consumos.add(consume);
 //        consumoJpaController.create(consume);
 //    }
-
 //    public void RemoveConsumo(Consumo c) throws Exception {
 ////        if (consumos.contains(consume)) {
 ////            consumos.remove(consume);
@@ -366,7 +368,6 @@ public class Taller implements Serializable {
 //        consumoJpaController.destroy(c.getPk());
 //
 //    }
-
     public int BuscarConsumo(Mantenimiento m, int ident) throws Exception {
         for (int i = 0; i <= m.getConsumos().size(); i++) {
             if (ident == m.getConsumos().get(i).getIdentificacion()) {
@@ -578,12 +579,18 @@ public class Taller implements Serializable {
     public void EditConsumoMantenimiento(Mantenimiento mant) throws Exception {
         mantenimientoJpaController.edit(mant);
     }
+    
+    
+    public void AgregarCompra(Compra c) throws Exception{
+        compraJpaController.create(c);
+    }
+    
+    
 
 //    public void AddConsumoMantenimiento(Mantenimiento m, Consumo c) throws Exception {
 //        m.AddConsumo(c);
 //        mantenimientoJpaController.edit(m);
 //    }
-
 //    public void ModificarReporte() {
 //        
 //        BufferedWriter bw = null;

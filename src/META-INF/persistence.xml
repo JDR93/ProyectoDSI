@@ -13,6 +13,7 @@
     <class>Source.Secretario</class>
     <class>Source.Servicio</class>
     <class>Source.Vehiculo</class>
+    <class>Source.Compra</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/WorkShopProyect"/>
       <property name="javax.persistence.jdbc.user" value="WorkShopProyect"/>

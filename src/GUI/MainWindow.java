@@ -713,7 +713,7 @@ public class MainWindow extends javax.swing.JFrame {
 
             if (this.facturacion == null) {
                 try {
-                    facturacion = new FacturacionServicioUI(taller);
+                    facturacion = new FacturacionServicioUI(taller,secretario);
                 } catch (Exception ex) {
                     Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -739,8 +739,7 @@ public class MainWindow extends javax.swing.JFrame {
                 jDesktopPane1.add(this.about);
                 this.about.setLocation(85, 30);
             }
-            this.about.setLocation((jDesktopPane1.getWidth() - this.about.getWidth()) / 2,
-                    (jDesktopPane1.getHeight() - this.about.getHeight()) / 2);
+            this.about.setLocation(360,520);
             this.about.setVisible(true);
         }
 

@@ -5,15 +5,17 @@
  */
 package GUI;
 
+import Source.Compra;
 import Source.Disponibilidad;
 import Source.Mantenimiento;
-import Source.Report;
+import Source.Secretario;
 import Source.Servicio;
 import Source.Taller;
 import Source.TipoVehiculo;
 import Source.Vehiculo;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,9 +24,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 /**
  *
  * @author julia
@@ -32,14 +31,15 @@ import java.util.GregorianCalendar;
 public class FacturacionServicioUI extends javax.swing.JInternalFrame {
 
     Taller taller;
-    Report reporte;
+    Compra compra;
+    Secretario secretario;
     Mantenimiento mantenimiento = new Mantenimiento();
     Vehiculo veh;
     ArrayList<Servicio> servicios;
 
-    public FacturacionServicioUI(Taller taller) throws Exception {
+    public FacturacionServicioUI(Taller taller, Secretario secretario) throws Exception {
         this.taller = taller;
-        this.reporte = new Report();
+        this.compra = new Compra();
 
         initComponents();
         this.taller = taller;
@@ -54,25 +54,35 @@ public class FacturacionServicioUI extends javax.swing.JInternalFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    
+
                     System.out.println(mantenimiento.getVehiculo().toString());
-                    
+
 //                    reporte.setContenido(reporte.getTitulo()+"\n\n\n"+mantenimiento.getVehiculo().getCliente().toString()+"\n"
 //                            +""+mantenimiento.getVehiculo().toString()+"\n\n"
 //                            +"CONSUMOS FACTURADOS\n"
 //                            +""+mantenimiento.getConsumos().toString()+"\n\n");
-                    
 //                    reporte.HacerReporte();
-                    
                     mantenimiento.getMecanico().setDisponibilidad(Disponibilidad.disponible);
                     taller.AddMantenimientoRealizado(mantenimiento);
-                    
-                    JOptionPane.showMessageDialog(rootPane, "Facturacion realizada con exito");
 
-                    taller.RemoveMantenimientoPendiente(mantenimiento);
+                    compra.setFecha(LocalDate.now());
+                    compra.setConsumos(mantenimiento.getConsumos());
+                    compra.setServicios(mantenimiento.getServicios());
+                    compra.setCostoManoObr(mantenimiento.getManodeObra());
+                    compra.setCostoTotal(mantenimiento.getCostoTotal());
+                    compra.setCostoProducto(mantenimiento.getCostoProductos());
+                    compra.setMecanico(mantenimiento.getMecanico());
+                    compra.setVehiculo(mantenimiento.getVehiculo());
+                    compra.setSecretario(secretario);
+
+                    taller.AgregarCompra(compra);
+
+                    JOptionPane.showMessageDialog(rootPane, "Facturacion realizada con exito");
                     mantenimiento.getMecanico().setDisponibilidad(Disponibilidad.disponible);
-                    mantenimiento = new Mantenimiento();
                     
+                    taller.RemoveMantenimientoPendiente(mantenimiento);
+                    mantenimiento = new Mantenimiento();
+
                     placaTxt.setText("");
                     marca.setText("");
                     tipo.setText("");
@@ -485,7 +495,7 @@ public class FacturacionServicioUI extends javax.swing.JInternalFrame {
                 marca.setText(veh.getMarca());
                 tipo.setText(tipVeh.name());
                 linea.setText(veh.getLinea());
-                
+
                 costoTxt.setText(Integer.toString((int) mantenimiento.getManodeObra()));
                 costoProductos.setText(Integer.toString((int) mantenimiento.costoProductos));
 
@@ -494,10 +504,8 @@ public class FacturacionServicioUI extends javax.swing.JInternalFrame {
 
                 valorIva.setText(Integer.toString(iva));
                 total.setText(Integer.toString(valTotal));
-                
-                System.out.println( taller.BuscarMantenimientoPend(mantenimiento.getVehiculo().getPlaca()).getServicios() );
-                
-                
+
+                System.out.println(taller.BuscarMantenimientoPend(mantenimiento.getVehiculo().getPlaca()).getServicios());
 
                 //Comienzo de proceso para traspasar la informacion del mantenimiento pendiente a
                 //mantenimiento realizado.
