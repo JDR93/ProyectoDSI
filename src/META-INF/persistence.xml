@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="WorkShopProyectPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>Source.Cliente</class>
+    <class>Source.Consumo</class>
+    <class>Source.Gerente</class>
+    <class>Source.Mantenimiento</class>
+    <class>Source.LocalDateConverter</class>
+    <class>Source.Mecanico</class>
+    <class>Source.Persona</class>
+    <class>Source.Producto</class>
+    <class>Source.Secretario</class>
+    <class>Source.Servicio</class>
+    <class>Source.Vehiculo</class>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/WorkShopProyect"/>
+      <property name="javax.persistence.jdbc.user" value="WorkShopProyect"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="javax.persistence.jdbc.password" value="WorkShopProyect"/>
+      <property name="javax.persistence.schema-generation.database.action" value="create"/>
+    </properties>
+  </persistence-unit>
+</persistence>
