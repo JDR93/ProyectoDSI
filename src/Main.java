@@ -51,7 +51,7 @@ public class Main {
         Secretario s = new Secretario("jaimesito.diaz@hotmail.com", "jaime02", "123", TipoCargo.Inventario, 1006542211, "Jaime", "Diaz", Genero.Masculino, 290831);
         Secretario s1 = new Secretario("laura.gonza@hotmail.com", "laura02", "123", TipoCargo.Ingresos, 1006542212, "Laura", "Gonzales", Genero.Femenino, 290832);
 ////
-//        taller.addSecretario(s1);        
+//        taller.addSecretario(s);        
 //        taller.addGerente(g1);
 //
 //         

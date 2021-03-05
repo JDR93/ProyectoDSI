@@ -69,7 +69,32 @@ public class MainWindow extends javax.swing.JFrame {
 //        jDesktopPane1.add(loginWindow);
 //        loginWindow.setVisible(true);
 //        loginWindow.setEnabled(false);
+
+
+        btnlogOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                
+                secretario = null;
+                nombreSession.setVisible(false);
+                btnlogOut.setVisible(false);
+                btnSecretario.setVisible(true);
+                btnGerente.setVisible(true);
+                jlabel.setVisible(true);
+                jlabel2.setVisible(true);
+                
+                ActivarDesactivarComponenetes("no");
+            }
+        });
+        
+        
+
     }
+    
+    
+    
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -95,6 +120,7 @@ public class MainWindow extends javax.swing.JFrame {
         jlabel = new javax.swing.JLabel();
         jlabel2 = new javax.swing.JLabel();
         btnGerente = new javax.swing.JButton();
+        nombreSession = new javax.swing.JLabel();
         jPanelSecretario = new javax.swing.JPanel();
         entrarSecretario = new javax.swing.JButton();
         jButtonClose2 = new javax.swing.JButton();
@@ -111,7 +137,6 @@ public class MainWindow extends javax.swing.JFrame {
         jlabel4 = new javax.swing.JLabel();
         passGerente = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        nombreSession = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuSolicitudes = new javax.swing.JMenu();
         IngresodeVehiculo = new javax.swing.JMenuItem();
@@ -138,6 +163,7 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setEnabled(false);
 
         btnRegistroServicios.setText("Registro de Servicio");
         btnRegistroServicios.setBorderPainted(false);
@@ -255,6 +281,7 @@ public class MainWindow extends javax.swing.JFrame {
         btnSecretario.setBorderPainted(false);
         btnSecretario.setContentAreaFilled(false);
         btnSecretario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnSecretario.setFocusPainted(false);
         btnSecretario.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnSecretarioMouseClicked(evt);
@@ -308,6 +335,11 @@ public class MainWindow extends javax.swing.JFrame {
         });
         jpanel_mesa.add(btnGerente);
         btnGerente.setBounds(220, 216, 203, 188);
+
+        nombreSession.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        nombreSession.setEnabled(false);
+        jpanel_mesa.add(nombreSession);
+        nombreSession.setBounds(380, 0, 432, 31);
 
         jPanelSecretario.setEnabled(false);
         jPanelSecretario.setPreferredSize(new java.awt.Dimension(780, 281));
@@ -373,10 +405,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         jpanel_mesa.add(jPanelGerente);
         jPanelGerente.setBounds(95, 200, 780, 281);
-
-        nombreSession.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jpanel_mesa.add(nombreSession);
-        nombreSession.setBounds(380, 0, 432, 31);
 
         jPanel4.add(jpanel_mesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 0, 960, 700));
 
@@ -818,10 +846,14 @@ public class MainWindow extends javax.swing.JFrame {
 
             for (Gerente g : taller.getGerentes()) {
                 if (usuarioGerente.getText().trim().equals(g.getUsuario()) && passGerente.getText().trim().equals(g.getPassword())) {
+                    
+                    usuarioGerente.setText("");
+                    passGerente.setText("");
+                    
                     OcultarMostrarJPanel("ocultar");
                     nombreSession.setText("Gerente: " + g.getNombres() + g.getApellidos());
                     btnlogOut.setVisible(true);
-                    
+                    nombreSession.setVisible(true);
                     ActivarDesactivarComponenetes("si");
                     
                 } else {
@@ -845,6 +877,9 @@ public class MainWindow extends javax.swing.JFrame {
                 if (secretario.getUsuario().equals(usuarioSecretario.getText())
                         && secretario.getPassword().equals(passSecretario.getText())
                         && secretario.getTipoDeCargo() == TipoCargo.Inventario) {
+                    
+                    usuarioSecretario.setText("");
+                    passSecretario.setText("");
 
                     OcultarMostrarJPanel("ocultar");
                     nombreSession.setText("Secretario(a) de inventario: " + secretario.getNombres()
@@ -854,7 +889,7 @@ public class MainWindow extends javax.swing.JFrame {
                     btnRegistrodeProductos.setEnabled(true);
 
                     jMenuRegistros.setEnabled(true);
-
+                    nombreSession.setVisible(true);
                     btnlogOut.setVisible(true);
 
                 }
@@ -862,9 +897,12 @@ public class MainWindow extends javax.swing.JFrame {
                 if (secretario.getUsuario().equals(usuarioSecretario.getText())
                         && secretario.getPassword().equals(passSecretario.getText())
                         && secretario.getTipoDeCargo() == TipoCargo.Ingresos) {
+                    
+                    usuarioSecretario.setText("");
+                    passSecretario.setText("");
 
                     OcultarMostrarJPanel("ocultar");
-                    nombreSession.setText("Secretario(a) de inventario: " + secretario.getNombres()
+                    nombreSession.setText("Secretario(a) de ingresos: " + secretario.getNombres()
                             + " " + secretario.getApellidos());
 
                     btnIngresodeVehiculo.setEnabled(true);
@@ -875,6 +913,8 @@ public class MainWindow extends javax.swing.JFrame {
                     jMenuMantenimiento.setEnabled(true);
                     jMenuFacturacion.setEnabled(true);
 
+                    
+                    nombreSession.setVisible(true);
                     btnlogOut.setVisible(true);
 
                 }
@@ -883,15 +923,6 @@ public class MainWindow extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(rootPane, ex.getMessage());
             }
         }
-    }
-
-    public class LogOutListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-
-        }
-
     }
 
     public void ActivarDesactivarComponenetes(String opcion) {
