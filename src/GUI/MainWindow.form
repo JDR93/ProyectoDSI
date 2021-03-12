@@ -140,6 +140,7 @@
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
+    <Property name="resizable" type="boolean" value="false"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="jMenuBar1"/>
@@ -224,11 +225,12 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="20" pref="20" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="btnFacturacionServicio" min="-2" pref="230" max="-2" attributes="0"/>
+                              <Component id="btnFacturacionServicio1" min="-2" pref="230" max="-2" attributes="0"/>
+                              <Component id="btnRegistroServicios" min="-2" pref="230" max="-2" attributes="0"/>
                               <Component id="btnIngresodeVehiculo" min="-2" pref="230" max="-2" attributes="0"/>
                               <Component id="btnAsigMecanico" min="-2" pref="230" max="-2" attributes="0"/>
-                              <Component id="btnFacturacionServicio" min="-2" pref="230" max="-2" attributes="0"/>
                               <Component id="btnRegistrodeProductos" min="-2" pref="230" max="-2" attributes="0"/>
-                              <Component id="btnRegistroServicios" min="-2" pref="230" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace pref="20" max="32767" attributes="0"/>
                       </Group>
@@ -237,17 +239,19 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                           <Component id="btnIngresodeVehiculo" min="-2" pref="50" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                           <Component id="btnAsigMecanico" min="-2" pref="50" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                           <Component id="btnFacturacionServicio" min="-2" pref="50" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                          <Component id="btnFacturacionServicio1" min="-2" pref="50" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
                           <Component id="btnRegistrodeProductos" min="-2" pref="50" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                           <Component id="btnRegistroServicios" min="-2" pref="50" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="393" max="-2" attributes="0"/>
+                          <EmptySpace pref="246" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -266,7 +270,7 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="btnFacturacionServicio">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Facturacion del Servicio"/>
+                    <Property name="text" type="java.lang.String" value="Registro Productos Utilizados"/>
                     <Property name="borderPainted" type="boolean" value="false"/>
                     <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
                       <Color id="Cursor de Mano"/>
@@ -277,13 +281,14 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="btnRegistrodeProductos">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Registro de Producto"/>
+                    <Property name="text" type="java.lang.String" value="Registro de Producto      "/>
                     <Property name="borderPainted" type="boolean" value="false"/>
                     <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
                       <Color id="Cursor de Mano"/>
                     </Property>
                     <Property name="enabled" type="boolean" value="false"/>
                     <Property name="horizontalAlignment" type="int" value="10"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JButton" name="btnAsigMecanico">
@@ -325,6 +330,17 @@
                     <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnIngresodeVehiculoMouseEntered"/>
                     <EventHandler event="mouseExited" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnIngresodeVehiculoMouseExited"/>
                   </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="btnFacturacionServicio1">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Facturacion del Servicio"/>
+                    <Property name="borderPainted" type="boolean" value="false"/>
+                    <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+                      <Color id="Cursor de Mano"/>
+                    </Property>
+                    <Property name="enabled" type="boolean" value="false"/>
+                    <Property name="horizontalAlignment" type="int" value="10"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>

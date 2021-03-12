@@ -113,6 +113,7 @@ public class MainWindow extends javax.swing.JFrame {
         btnRegistrodeProductos = new javax.swing.JButton();
         btnAsigMecanico = new javax.swing.JButton();
         btnIngresodeVehiculo = new javax.swing.JButton();
+        btnFacturacionServicio1 = new javax.swing.JButton();
         btnMenu = new javax.swing.JButton();
         jpanel_mesa = new javax.swing.JPanel();
         btnlogOut = new javax.swing.JButton();
@@ -155,6 +156,7 @@ public class MainWindow extends javax.swing.JFrame {
         acerca = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jDesktopPane1.setBackground(new java.awt.Color(102, 102, 102));
@@ -171,17 +173,18 @@ public class MainWindow extends javax.swing.JFrame {
         btnRegistroServicios.setEnabled(false);
         btnRegistroServicios.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
 
-        btnFacturacionServicio.setText("Facturacion del Servicio");
+        btnFacturacionServicio.setText("Registro Productos Utilizados");
         btnFacturacionServicio.setBorderPainted(false);
         btnFacturacionServicio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnFacturacionServicio.setEnabled(false);
         btnFacturacionServicio.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
 
-        btnRegistrodeProductos.setText("Registro de Producto");
+        btnRegistrodeProductos.setText("Registro de Producto      ");
         btnRegistrodeProductos.setBorderPainted(false);
         btnRegistrodeProductos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRegistrodeProductos.setEnabled(false);
         btnRegistrodeProductos.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        btnRegistrodeProductos.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
 
         btnAsigMecanico.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/AsigMecanico.png"))); // NOI18N
         btnAsigMecanico.setText("Asignar Mecanico         ");
@@ -217,6 +220,12 @@ public class MainWindow extends javax.swing.JFrame {
             }
         });
 
+        btnFacturacionServicio1.setText("Facturacion del Servicio");
+        btnFacturacionServicio1.setBorderPainted(false);
+        btnFacturacionServicio1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnFacturacionServicio1.setEnabled(false);
+        btnFacturacionServicio1.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -224,27 +233,30 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnFacturacionServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFacturacionServicio1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnRegistroServicios, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnIngresodeVehiculo, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAsigMecanico, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnFacturacionServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRegistrodeProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRegistroServicios, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnRegistrodeProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addGap(30, 30, 30)
                 .addComponent(btnIngresodeVehiculo, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
                 .addComponent(btnAsigMecanico, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
                 .addComponent(btnFacturacionServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
+                .addComponent(btnFacturacionServicio1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(44, 44, 44)
                 .addComponent(btnRegistrodeProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20)
                 .addComponent(btnRegistroServicios, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(393, 393, 393))
+                .addContainerGap(246, Short.MAX_VALUE))
         );
 
         jPanel4.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 270, 700));
@@ -618,6 +630,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem asignacionMecanico;
     private javax.swing.JButton btnAsigMecanico;
     private javax.swing.JButton btnFacturacionServicio;
+    private javax.swing.JButton btnFacturacionServicio1;
     private javax.swing.JButton btnGerente;
     private javax.swing.JButton btnIngresodeVehiculo;
     private javax.swing.JButton btnMenu;
