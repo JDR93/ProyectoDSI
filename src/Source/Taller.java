@@ -146,6 +146,10 @@ public class Taller implements Serializable {
         return mantenimientoJpaController.findMantenimientoEntities();
     }
 
+    public List<Compra> getCompras() {
+        return compraJpaController.findCompraEntities();
+    }
+
 //    public void setMpendientes(ArrayList<Mantenimiento> Mpendientes) throws IllegalArgumentException {
 //        if (this.Mpendientes == null) {
 //            throw new IllegalArgumentException("Lista de mantenimientos pendientes nula");
@@ -216,10 +220,10 @@ public class Taller implements Serializable {
         }
     }
 
-    public Secretario buscarSecretario(String usuario) throws Exception {
+    public Secretario buscarSecretario(String usuario, String pass) throws Exception {
         try {
             for (Secretario s : getSecretarios()) {
-                if (s.getUsuario().equals(usuario)) {
+                if (s.getUsuario().equals(usuario) && s.getPassword().equals(pass)) {
                     return s;
                 }
 
@@ -343,38 +347,39 @@ public class Taller implements Serializable {
 
     }
 
+    public Servicio BuscarServicioToString(String toString) throws Exception{
+        
+        Servicio s = null;
+        
+        
+        for (int i = 0; i < getServicios().size(); i++) {
+            if (toString.equals(getServicios().get(i).toString())) {
+               return s = getServicios().get(i);
+            }
+        }
+        throw new Exception("Servicio no encontrado");
+    }
+
     public void RemoveProducto(Producto p) throws Exception {
-//        if (productos.contains(p)) {
-//            productos.remove(p);
-//        } else {
-//            throw new Exception("Producto no encontrado.");
-//        }
         productoJpaController.destroy(p.getCodigo());
     }
 
-//    public void AddConsumo(Consumo consume) throws Exception {
-////        if (consumos.contains(consume)) {
-////            throw new Exception("Consumo ya se encuentra en el listado de consumos registrados.");
-////        }
-////        consumos.add(consume);
-//        consumoJpaController.create(consume);
-//    }
-//    public void RemoveConsumo(Consumo c) throws Exception {
-////        if (consumos.contains(consume)) {
-////            consumos.remove(consume);
-////        } else {
-////            throw new Exception("Consumo no encontrado.");
-////        }
-//        consumoJpaController.destroy(c.getPk());
-//
-//    }
-    public int BuscarConsumo(Mantenimiento m, int ident) throws Exception {
-        for (int i = 0; i <= m.getConsumos().size(); i++) {
-            if (ident == m.getConsumos().get(i).getIdentificacion()) {
-                return ident;
+    public void AddConsumo(Consumo c) throws Exception {
+        consumoJpaController.create(c);
+
+    }
+
+    public void RemoveConsumo(Consumo c) throws Exception {
+        consumoJpaController.destroy(c.getPk());
+    }
+
+    public Consumo BuscarConsumo(int pk) throws Exception {
+        for (int i = 0; i < this.getConsumos().size(); i++) {
+            if (this.getConsumos().get(i).getPk() == pk) {
+                return this.getConsumos().get(i);
             }
         }
-        throw new Exception("No se encontro producto.");
+        throw new Exception("Consumo no encontrado.");
     }
 
     public void AddMecanico(Mecanico mecanico) throws Exception {
@@ -496,13 +501,12 @@ public class Taller implements Serializable {
         return mantenimientos;
     }
 
-    public Producto BuscarProducto(int codigo) throws Exception {
-        for (int i = 0; i < this.getProductos().size(); i++) {
-            if (this.getProductos().get(i).getCodigo() == codigo) {
-                return this.getProductos().get(i);
-            }
-        }
-        throw new Exception("Producto no encontrado.");
+    public Producto BuscarProducto(int codigo) {
+        return productoJpaController.findProducto(codigo);
+    }
+
+    public Servicio BuscarServicio(int codigo) {
+        return servicioJpaController.findServicio(codigo);
     }
 
     public Gerente buscarGerente(String usuario) throws Exception {
@@ -524,6 +528,10 @@ public class Taller implements Serializable {
 
         mecanicoJpaController.edit(mantenimiento.getMecanico());
 
+    }
+
+    public void EditMantenimientoCons(Mantenimiento mantenimiento) throws Exception {
+        mantenimientoJpaController.edit(mantenimiento);
     }
 
     public void AddMantenimientoRealizado(Mantenimiento mantenimiento) throws Exception {
@@ -576,16 +584,12 @@ public class Taller implements Serializable {
 
     }
 
-    public void EditConsumoMantenimiento(Mantenimiento mant) throws Exception {
-        mantenimientoJpaController.edit(mant);
-    }
-    
-    
-    public void AgregarCompra(Compra c) throws Exception{
+//    public void EditConsumoMantenimiento(Mantenimiento mant) throws Exception {
+//        mantenimientoJpaController.edit(mant);
+//    }
+    public void AgregarCompra(Compra c) throws Exception {
         compraJpaController.create(c);
     }
-    
-    
 
 //    public void AddConsumoMantenimiento(Mantenimiento m, Consumo c) throws Exception {
 //        m.AddConsumo(c);
@@ -617,4 +621,8 @@ public class Taller implements Serializable {
 //        }
 //
 //    }
+    public boolean señalDeCambio(boolean signal) {
+        return signal;
+    }
+
 }

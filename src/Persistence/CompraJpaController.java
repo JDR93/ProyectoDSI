@@ -6,7 +6,6 @@
 package Persistence;
 
 import Persistence.exceptions.NonexistentEntityException;
-import Persistence.exceptions.PreexistingEntityException;
 import Source.Compra;
 import java.io.Serializable;
 import java.util.List;
@@ -32,18 +31,13 @@ public class CompraJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Compra compra) throws PreexistingEntityException, Exception {
+    public void create(Compra compra) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
             em.persist(compra);
             em.getTransaction().commit();
-        } catch (Exception ex) {
-            if (findCompra(compra.getNumeroFactura()) != null) {
-                throw new PreexistingEntityException("Compra " + compra + " already exists.", ex);
-            }
-            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -61,7 +55,7 @@ public class CompraJpaController implements Serializable {
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                String id = compra.getNumeroFactura();
+                int id = compra.getNumeroFactura();
                 if (findCompra(id) == null) {
                     throw new NonexistentEntityException("The compra with id " + id + " no longer exists.");
                 }
@@ -74,7 +68,7 @@ public class CompraJpaController implements Serializable {
         }
     }
 
-    public void destroy(String id) throws NonexistentEntityException {
+    public void destroy(int id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -119,7 +113,7 @@ public class CompraJpaController implements Serializable {
         }
     }
 
-    public Compra findCompra(String id) {
+    public Compra findCompra(int id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(Compra.class, id);

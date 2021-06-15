@@ -28,7 +28,7 @@ public class Compra implements Serializable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String numeroFactura;
+    private int numeroFactura;
     
     @OneToOne
     private Vehiculo vehiculo;
@@ -59,19 +59,18 @@ public class Compra implements Serializable {
     
     
     
-    public Compra(String numeroFactura, Vehiculo vehiculo, Mecanico mecanico, Secretario secretario, LocalDate fecha) {
-        this.numeroFactura = numeroFactura;
+    public Compra(Vehiculo vehiculo, Mecanico mecanico, Secretario secretario, LocalDate fecha) {
         this.vehiculo = vehiculo;
         this.mecanico = mecanico;
         this.secretario = secretario;
         this.fecha = fecha;
     }
 
-    public String getNumeroFactura() {
+    public int getNumeroFactura() {
         return numeroFactura;
     }
 
-    public void setNumeroFactura(String numeroFactura) {
+    public void setNumeroFactura(int numeroFactura) {
         this.numeroFactura = numeroFactura;
     }
 

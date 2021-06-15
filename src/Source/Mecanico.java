@@ -86,7 +86,7 @@ public class Mecanico extends Persona {
 
     @Override
     public String toString() {
-        return "[" + codigo + "] "+getNombres()+" "+getApellidos()+ " |Correo|: "+getCorreo()+" |Contacto|: "+getTelefono();
+        return "[" + codigo + "] "+getNombres()+" "+getApellidos()+ " [Correo]: "+getCorreo()+" [Contacto]: "+getTelefono();
     }
 
 }

@@ -1,26 +1,23 @@
 package Source;
 
 import java.io.Serializable;
-import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.swing.JOptionPane;
 
 /**
  * @author JulianDiaz
  */
-
 @Entity
-public class Producto implements Serializable{
-    
+public class Producto implements Serializable {
+
     @Id
     private int codigo;
-    
-    @Column(nullable = false,length = 80,unique = true)
+
+    @Column(nullable = false, length = 80, unique = true)
     private String nombre;
-    
+
     @Column(nullable = false)
     private int costo;
 
@@ -28,17 +25,15 @@ public class Producto implements Serializable{
     }
 
     public Producto(int codigo, String nombre, int costo) throws Exception {
-        
-        if(codigo <= 0){
+
+        if (codigo <= 0) {
             throw new Exception("Numero de codigo no valido.");
         }
-        
-        
-        if(costo <= 0){
+
+        if (costo <= 0) {
             throw new Exception("Costo de producto no valido.");
         }
-        
-        
+
         this.codigo = codigo;
         this.nombre = nombre;
         this.costo = costo;
@@ -48,12 +43,12 @@ public class Producto implements Serializable{
         return codigo;
     }
 
-    public void setCodigo(int codigo) throws Exception {   
-        
-        if(codigo <= 0){
+    public void setCodigo(int codigo) throws Exception {
+
+        if (codigo <= 0) {
             throw new Exception("Numero de codigo no valido.");
         }
-        
+
         this.codigo = codigo;
     }
 
@@ -68,23 +63,20 @@ public class Producto implements Serializable{
     public int getCosto() {
         return costo;
     }
-    
+
     public void setCosto(int costo) throws Exception {
-        
-        if(costo <= 0){
+
+        if (costo <= 0) {
             throw new Exception("Costo de producto no valido.");
         }
-        
+
         this.costo = costo;
     }
 
     @Override
     public String toString() {
-        
+
         return "\nCodigo:" + codigo + " - nombre: " + nombre + " - costo: " + costo;
     }
-    
-    
-    
-    
+
 }

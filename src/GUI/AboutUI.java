@@ -5,6 +5,8 @@
  */
 package GUI;
 
+import javax.swing.plaf.basic.BasicInternalFrameUI;
+
 /**
  *
  * @author JDiaz
@@ -16,6 +18,10 @@ public class AboutUI extends javax.swing.JInternalFrame {
      */
     public AboutUI() {
         initComponents();
+        
+        this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        BasicInternalFrameUI bui = (BasicInternalFrameUI) this.getUI();
+        bui.setNorthPane(null);
     }
 
     /**
@@ -28,6 +34,7 @@ public class AboutUI extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        btnCloseSecretario = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -37,6 +44,30 @@ public class AboutUI extends javax.swing.JInternalFrame {
         setClosable(true);
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(775, 137));
+
+        jPanel1.setLayout(null);
+
+        btnCloseSecretario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.jpg"))); // NOI18N
+        btnCloseSecretario.setContentAreaFilled(false);
+        btnCloseSecretario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCloseSecretario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCloseSecretarioMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnCloseSecretarioMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnCloseSecretarioMouseExited(evt);
+            }
+        });
+        btnCloseSecretario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCloseSecretarioActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnCloseSecretario);
+        btnCloseSecretario.setBounds(10, 10, 28, 28);
 
         jPanel2.setBackground(new java.awt.Color(0, 0, 0));
         jPanel2.setPreferredSize(new java.awt.Dimension(315, 36));
@@ -83,39 +114,46 @@ public class AboutUI extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/2.gif"))); // NOI18N
+        jPanel1.add(jPanel2);
+        jPanel2.setBounds(0, 46, 761, 65);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addGap(0, 0, 0)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/2.gif"))); // NOI18N
+        jPanel1.add(jLabel1);
+        jLabel1.setBounds(0, 0, 761, 46);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnCloseSecretarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseSecretarioMouseClicked
+        hide();
+    }//GEN-LAST:event_btnCloseSecretarioMouseClicked
+
+    private void btnCloseSecretarioMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseSecretarioMouseEntered
+        btnCloseSecretario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.gif")));
+    }//GEN-LAST:event_btnCloseSecretarioMouseEntered
+
+    private void btnCloseSecretarioMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseSecretarioMouseExited
+        btnCloseSecretario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.jpg")));
+    }//GEN-LAST:event_btnCloseSecretarioMouseExited
+
+    private void btnCloseSecretarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseSecretarioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCloseSecretarioActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCloseSecretario;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

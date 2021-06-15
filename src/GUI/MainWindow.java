@@ -10,11 +10,14 @@ import Source.Report;
 import Source.Secretario;
 import Source.Taller;
 import Source.TipoCargo;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.Timer;
 import rojerusan.RSAnimation;
 
 /**
@@ -25,9 +28,26 @@ public class MainWindow extends javax.swing.JFrame {
 
     private Taller taller;
     private Secretario secretario;
+    private Gerente gerente;
     private Report reporte;
     private int ancho = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
     private int alto = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
+
+    private String VariabledeCambio;
+
+    private RegistroProducto registroP = null;
+    private IngresoVehiculosUI ingresoVH = null;
+    private AsignacionMecanicoUI asignacion = null;
+    private RegistroProductosUtilizadosUI registroPro = null;
+
+    private boolean signalCloseButton;
+    public Timer timerRegistrarPdt;
+    public Timer timerHistory;
+    public Timer timerIngresoVeh;
+    public Timer timerAsigMec;
+    public Timer timerRegiPdtUtilizados;
+    public Timer timerFacturacionServ;
+    public Timer timerRegServicio;
 
     public MainWindow(Taller taller) {
 
@@ -37,20 +57,33 @@ public class MainWindow extends javax.swing.JFrame {
 
         initComponents();
 
+        // Cambiando icono del programa.
+        this.setIconImage(new javax.swing.ImageIcon(getClass().getResource("/Images/logo180px.png")).getImage());
+
         btnlogOut.setVisible(false);
 
         IngresoVehiculoListener ingresoVeh = new IngresoVehiculoListener();
         AsignacionMecanicoListener asigMeca = new AsignacionMecanicoListener();
+        RegistroProductosUtilizadosListener regPUtilizados = new RegistroProductosUtilizadosListener();
+        RegistroProductoListener regProducto = new RegistroProductoListener();
+        FacturacionListener facturacion = new FacturacionListener();
+        HistorialMantListener historial = new HistorialMantListener();
 
         this.IngresodeVehiculo.addActionListener(ingresoVeh);
         this.asignacionMecanico.addActionListener(asigMeca);
-        this.registroProductos.addActionListener(new RegistroProductosListener());
-        this.facturacionSrevicio.addActionListener(new FacturacionListener());
+        this.registroProductos.addActionListener(regPUtilizados);
+        this.facturacionSrevicio.addActionListener(facturacion);
 
         this.btnIngresodeVehiculo.addActionListener(ingresoVeh);
         this.btnAsigMecanico.addActionListener(asigMeca);
+        this.btnFacturacionServicio.addActionListener(facturacion);
+        this.btnRegistroPUtilizado.addActionListener(regPUtilizados);
+        this.btnRegistrodeProductos.addActionListener(regProducto);
+        this.btnHistorial.addActionListener(historial);
+//        this.btnRegistroServicios.addActionListener(new Re);
 
         this.acerca.addActionListener(new AboutUIListener());
+        this.historialM.addActionListener(historial);
 
         OcultarMostrarJPanel("ocultar");
 
@@ -62,19 +95,17 @@ public class MainWindow extends javax.swing.JFrame {
 
         this.entrarGerente.addActionListener(new AccesoGerente());
         this.entrarSecretario.addActionListener(new AccesoSecretario());
-        
+
         this.regProducto.addActionListener(new RegistroProductoListener());
 
 //        Login loginWindow = new Login(taller);
 //        jDesktopPane1.add(loginWindow);
 //        loginWindow.setVisible(true);
 //        loginWindow.setEnabled(false);
-
-
         btnlogOut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                
+
                 secretario = null;
                 nombreSession.setVisible(false);
                 btnlogOut.setVisible(false);
@@ -82,19 +113,35 @@ public class MainWindow extends javax.swing.JFrame {
                 btnGerente.setVisible(true);
                 jlabel.setVisible(true);
                 jlabel2.setVisible(true);
-                
-                ActivarDesactivarComponenetes("no");
+
+                DesactivarComponenetes();
+                signalCloseButton = true;
+                VariabledeCambio = "";
+
+                try {
+                    timerIngresoVeh.stop();
+                    timerAsigMec.stop();
+                    timerRegiPdtUtilizados.stop();
+                    timerFacturacionServ.stop();
+                    timerRegistrarPdt.stop();
+                    timerRegServicio.stop();
+                    timerHistory.stop();
+                } catch (Exception exc) {
+
+                }
+
             }
         });
-        
-        
+
+        jLabel5.setVisible(false);
+        jLabel6.setVisible(false);
+        jLabel7.setVisible(false);
+        jLabel8.setVisible(false);
+        jLabel9.setVisible(false);
+        jLabel10.setVisible(false);
+        jLabel11.setVisible(false);
 
     }
-    
-    
-    
-    
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -109,11 +156,19 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         btnRegistroServicios = new javax.swing.JButton();
-        btnFacturacionServicio = new javax.swing.JButton();
+        btnRegistroPUtilizado = new javax.swing.JButton();
         btnRegistrodeProductos = new javax.swing.JButton();
         btnAsigMecanico = new javax.swing.JButton();
         btnIngresodeVehiculo = new javax.swing.JButton();
-        btnFacturacionServicio1 = new javax.swing.JButton();
+        btnFacturacionServicio = new javax.swing.JButton();
+        btnHistorial = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
         btnMenu = new javax.swing.JButton();
         jpanel_mesa = new javax.swing.JPanel();
         btnlogOut = new javax.swing.JButton();
@@ -123,20 +178,20 @@ public class MainWindow extends javax.swing.JFrame {
         btnGerente = new javax.swing.JButton();
         nombreSession = new javax.swing.JLabel();
         jPanelSecretario = new javax.swing.JPanel();
+        btnCloseSecretario = new javax.swing.JButton();
         entrarSecretario = new javax.swing.JButton();
-        jButtonClose2 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         usuarioSecretario = new javax.swing.JTextField();
+        passSecretario = new javax.swing.JPasswordField();
         jlabel3 = new javax.swing.JLabel();
-        passSecretario = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jPanelGerente = new javax.swing.JPanel();
-        jButtonClose = new javax.swing.JButton();
+        btnCloseGerente = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         usuarioGerente = new javax.swing.JTextField();
         entrarGerente = new javax.swing.JButton();
         jlabel4 = new javax.swing.JLabel();
-        passGerente = new javax.swing.JTextField();
+        passGerente = new javax.swing.JPasswordField();
         jLabel4 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuSolicitudes = new javax.swing.JMenu();
@@ -152,6 +207,8 @@ public class MainWindow extends javax.swing.JFrame {
         regMeacanico = new javax.swing.JMenuItem();
         regSecretarioInv = new javax.swing.JMenuItem();
         regSecretarioIng = new javax.swing.JMenuItem();
+        jMenuhistorial = new javax.swing.JMenu();
+        historialM = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         acerca = new javax.swing.JMenuItem();
 
@@ -166,33 +223,82 @@ public class MainWindow extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setEnabled(false);
+        jPanel1.setLayout(null);
 
-        btnRegistroServicios.setText("Registro de Servicio");
-        btnRegistroServicios.setBorderPainted(false);
+        btnRegistroServicios.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logoServicioOff.png"))); // NOI18N
+        btnRegistroServicios.setText("    Registro de Servicio           ");
+        btnRegistroServicios.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        btnRegistroServicios.setContentAreaFilled(false);
         btnRegistroServicios.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRegistroServicios.setEnabled(false);
-        btnRegistroServicios.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        btnRegistroServicios.setFocusPainted(false);
+        btnRegistroServicios.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnRegistroServicios.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        btnRegistroServicios.setPreferredSize(new java.awt.Dimension(117, 19));
+        btnRegistroServicios.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnRegistroServiciosMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnRegistroServiciosMouseExited(evt);
+            }
+        });
+        jPanel1.add(btnRegistroServicios);
+        btnRegistroServicios.setBounds(12, 404, 242, 50);
 
-        btnFacturacionServicio.setText("Registro Productos Utilizados");
-        btnFacturacionServicio.setBorderPainted(false);
-        btnFacturacionServicio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnFacturacionServicio.setEnabled(false);
-        btnFacturacionServicio.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        btnRegistroPUtilizado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/regputilizadosOff.png"))); // NOI18N
+        btnRegistroPUtilizado.setText("    Registro Pdts Utilizados      ");
+        btnRegistroPUtilizado.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        btnRegistroPUtilizado.setContentAreaFilled(false);
+        btnRegistroPUtilizado.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnRegistroPUtilizado.setEnabled(false);
+        btnRegistroPUtilizado.setFocusPainted(false);
+        btnRegistroPUtilizado.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnRegistroPUtilizado.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        btnRegistroPUtilizado.setPreferredSize(new java.awt.Dimension(167, 19));
+        btnRegistroPUtilizado.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnRegistroPUtilizadoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnRegistroPUtilizadoMouseExited(evt);
+            }
+        });
+        jPanel1.add(btnRegistroPUtilizado);
+        btnRegistroPUtilizado.setBounds(12, 168, 242, 50);
 
-        btnRegistrodeProductos.setText("Registro de Producto      ");
-        btnRegistrodeProductos.setBorderPainted(false);
+        btnRegistrodeProductos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logoProductoOff.png"))); // NOI18N
+        btnRegistrodeProductos.setText("    Registro de Producto           ");
+        btnRegistrodeProductos.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        btnRegistrodeProductos.setContentAreaFilled(false);
         btnRegistrodeProductos.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRegistrodeProductos.setEnabled(false);
-        btnRegistrodeProductos.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
-        btnRegistrodeProductos.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        btnRegistrodeProductos.setFocusPainted(false);
+        btnRegistrodeProductos.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnRegistrodeProductos.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        btnRegistrodeProductos.setPreferredSize(new java.awt.Dimension(145, 19));
+        btnRegistrodeProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnRegistrodeProductosMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnRegistrodeProductosMouseExited(evt);
+            }
+        });
+        jPanel1.add(btnRegistrodeProductos);
+        btnRegistrodeProductos.setBounds(12, 336, 242, 50);
 
         btnAsigMecanico.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/AsigMecanico.png"))); // NOI18N
-        btnAsigMecanico.setText("Asignar Mecanico         ");
-        btnAsigMecanico.setBorderPainted(false);
+        btnAsigMecanico.setText("    Asignar Mecanico            ");
+        btnAsigMecanico.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        btnAsigMecanico.setContentAreaFilled(false);
         btnAsigMecanico.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAsigMecanico.setDisabledIcon(null);
         btnAsigMecanico.setEnabled(false);
-        btnAsigMecanico.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
-        btnAsigMecanico.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        btnAsigMecanico.setFocusPainted(false);
+        btnAsigMecanico.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnAsigMecanico.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        btnAsigMecanico.setPreferredSize(new java.awt.Dimension(197, 35));
         btnAsigMecanico.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btnAsigMecanicoMouseEntered(evt);
@@ -201,16 +307,20 @@ public class MainWindow extends javax.swing.JFrame {
                 btnAsigMecanicoMouseExited(evt);
             }
         });
+        jPanel1.add(btnAsigMecanico);
+        btnAsigMecanico.setBounds(12, 100, 242, 50);
 
         btnIngresodeVehiculo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ingresoVeh.png"))); // NOI18N
-        btnIngresodeVehiculo.setText("Ingreso de vehiculo       ");
+        btnIngresodeVehiculo.setText("    Ingreso de vehiculo         ");
         btnIngresodeVehiculo.setAutoscrolls(true);
-        btnIngresodeVehiculo.setBorderPainted(false);
+        btnIngresodeVehiculo.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        btnIngresodeVehiculo.setContentAreaFilled(false);
         btnIngresodeVehiculo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnIngresodeVehiculo.setDisabledIcon(null);
         btnIngresodeVehiculo.setEnabled(false);
         btnIngresodeVehiculo.setFocusPainted(false);
-        btnIngresodeVehiculo.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
-        btnIngresodeVehiculo.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        btnIngresodeVehiculo.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnIngresodeVehiculo.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         btnIngresodeVehiculo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btnIngresodeVehiculoMouseEntered(evt);
@@ -219,45 +329,78 @@ public class MainWindow extends javax.swing.JFrame {
                 btnIngresodeVehiculoMouseExited(evt);
             }
         });
+        jPanel1.add(btnIngresodeVehiculo);
+        btnIngresodeVehiculo.setBounds(12, 32, 242, 50);
 
-        btnFacturacionServicio1.setText("Facturacion del Servicio");
-        btnFacturacionServicio1.setBorderPainted(false);
-        btnFacturacionServicio1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnFacturacionServicio1.setEnabled(false);
-        btnFacturacionServicio1.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
+        btnFacturacionServicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnFacturaOff.png"))); // NOI18N
+        btnFacturacionServicio.setText("    Facturacion del Servicio      ");
+        btnFacturacionServicio.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        btnFacturacionServicio.setContentAreaFilled(false);
+        btnFacturacionServicio.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnFacturacionServicio.setEnabled(false);
+        btnFacturacionServicio.setFocusPainted(false);
+        btnFacturacionServicio.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnFacturacionServicio.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        btnFacturacionServicio.setPreferredSize(new java.awt.Dimension(139, 19));
+        btnFacturacionServicio.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnFacturacionServicioMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnFacturacionServicioMouseExited(evt);
+            }
+        });
+        jPanel1.add(btnFacturacionServicio);
+        btnFacturacionServicio.setBounds(12, 236, 242, 50);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnFacturacionServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnFacturacionServicio1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRegistroServicios, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnIngresodeVehiculo, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAsigMecanico, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnRegistrodeProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(20, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addComponent(btnIngresodeVehiculo, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(btnAsigMecanico, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(btnFacturacionServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(btnFacturacionServicio1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(44, 44, 44)
-                .addComponent(btnRegistrodeProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20)
-                .addComponent(btnRegistroServicios, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(246, Short.MAX_VALUE))
-        );
+        btnHistorial.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/historyOff.png"))); // NOI18N
+        btnHistorial.setText("    Hitorial de Mantenimientos  ");
+        btnHistorial.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 204, 204)));
+        btnHistorial.setContentAreaFilled(false);
+        btnHistorial.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnHistorial.setEnabled(false);
+        btnHistorial.setFocusPainted(false);
+        btnHistorial.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        btnHistorial.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        btnHistorial.setPreferredSize(new java.awt.Dimension(117, 19));
+        btnHistorial.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnHistorialMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnHistorialMouseExited(evt);
+            }
+        });
+        jPanel1.add(btnHistorial);
+        btnHistorial.setBounds(12, 472, 242, 50);
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnDegradado.png"))); // NOI18N
+        jPanel1.add(jLabel5);
+        jLabel5.setBounds(12, 472, 242, 50);
+
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnDegradado.png"))); // NOI18N
+        jPanel1.add(jLabel6);
+        jLabel6.setBounds(12, 404, 242, 50);
+
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnDegradado.png"))); // NOI18N
+        jPanel1.add(jLabel7);
+        jLabel7.setBounds(12, 336, 242, 50);
+
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnDegradadoOther.png"))); // NOI18N
+        jPanel1.add(jLabel8);
+        jLabel8.setBounds(12, 236, 242, 50);
+
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnDegradadoOther.png"))); // NOI18N
+        jPanel1.add(jLabel9);
+        jLabel9.setBounds(12, 168, 242, 50);
+
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnDegradadoOther.png"))); // NOI18N
+        jPanel1.add(jLabel10);
+        jLabel10.setBounds(12, 100, 242, 50);
+
+        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnDegradadoOther.png"))); // NOI18N
+        jPanel1.add(jLabel11);
+        jLabel11.setBounds(12, 32, 242, 50);
 
         jPanel4.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 270, 700));
         jPanel1.getAccessibleContext().setAccessibleParent(jPanel1);
@@ -281,13 +424,22 @@ public class MainWindow extends javax.swing.JFrame {
         btnlogOut.setContentAreaFilled(false);
         btnlogOut.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnlogOut.setFocusPainted(false);
-        btnlogOut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnlogOutActionPerformed(evt);
+        btnlogOut.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnlogOutMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnlogOutMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnlogOutMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                btnlogOutMousePressed(evt);
             }
         });
         jpanel_mesa.add(btnlogOut);
-        btnlogOut.setBounds(820, 0, 104, 31);
+        btnlogOut.setBounds(804, 0, 120, 31);
 
         btnSecretario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logoSecretario.png"))); // NOI18N
         btnSecretario.setBorderPainted(false);
@@ -351,54 +503,65 @@ public class MainWindow extends javax.swing.JFrame {
         nombreSession.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         nombreSession.setEnabled(false);
         jpanel_mesa.add(nombreSession);
-        nombreSession.setBounds(380, 0, 432, 31);
+        nombreSession.setBounds(350, 0, 432, 31);
 
         jPanelSecretario.setEnabled(false);
         jPanelSecretario.setPreferredSize(new java.awt.Dimension(780, 281));
         jPanelSecretario.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        entrarSecretario.setText("Entrar");
-        entrarSecretario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanelSecretario.add(entrarSecretario, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 150, 300, -1));
-
-        jButtonClose2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Button_close.png"))); // NOI18N
-        jButtonClose2.setBorderPainted(false);
-        jButtonClose2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButtonClose2.setFocusPainted(false);
-        jButtonClose2.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnCloseSecretario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.jpg"))); // NOI18N
+        btnCloseSecretario.setContentAreaFilled(false);
+        btnCloseSecretario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCloseSecretario.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButtonClose2MouseClicked(evt);
+                btnCloseSecretarioMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnCloseSecretarioMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnCloseSecretarioMouseExited(evt);
             }
         });
-        jPanelSecretario.add(jButtonClose2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 30, 30));
+        jPanelSecretario.add(btnCloseSecretario, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 16, 28, 28));
+
+        entrarSecretario.setText("Entrar");
+        entrarSecretario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        entrarSecretario.setFocusPainted(false);
+        jPanelSecretario.add(entrarSecretario, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 150, 300, -1));
 
         jLabel1.setText("Usuario:");
         jPanelSecretario.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 90, 106, 22));
         jPanelSecretario.add(usuarioSecretario, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 90, 179, -1));
+        jPanelSecretario.add(passSecretario, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 120, 179, -1));
 
         jlabel3.setText("Contraseña:");
         jPanelSecretario.add(jlabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 120, 106, 22));
-        jPanelSecretario.add(passSecretario, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 120, 179, -1));
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Login_Gerente.png"))); // NOI18N
-        jPanelSecretario.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 780, -1));
+        jPanelSecretario.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 780, -1));
 
         jpanel_mesa.add(jPanelSecretario);
-        jPanelSecretario.setBounds(95, 200, 780, 280);
+        jPanelSecretario.setBounds(95, 180, 780, 300);
 
         jPanelGerente.setEnabled(false);
         jPanelGerente.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jButtonClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Button_close.png"))); // NOI18N
-        jButtonClose.setBorderPainted(false);
-        jButtonClose.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jButtonClose.setFocusPainted(false);
-        jButtonClose.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnCloseGerente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.jpg"))); // NOI18N
+        btnCloseGerente.setContentAreaFilled(false);
+        btnCloseGerente.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnCloseGerente.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButtonCloseMouseClicked(evt);
+                btnCloseGerenteMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnCloseGerenteMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnCloseGerenteMouseExited(evt);
             }
         });
-        jPanelGerente.add(jButtonClose, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 30, 30));
+        jPanelGerente.add(btnCloseGerente, new org.netbeans.lib.awtextra.AbsoluteConstraints(7, 16, 28, 28));
 
         jLabel3.setText("Usuario:");
         jPanelGerente.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 90, 106, 22));
@@ -413,10 +576,10 @@ public class MainWindow extends javax.swing.JFrame {
         jPanelGerente.add(passGerente, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 120, 179, -1));
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Login_Secretario.png"))); // NOI18N
-        jPanelGerente.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 780, -1));
+        jPanelGerente.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 780, -1));
 
         jpanel_mesa.add(jPanelGerente);
-        jPanelGerente.setBounds(95, 200, 780, 281);
+        jPanelGerente.setBounds(95, 180, 780, 261);
 
         jPanel4.add(jpanel_mesa, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 0, 960, 700));
 
@@ -437,6 +600,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         getContentPane().add(jDesktopPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
+        jMenuBar1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jMenuBar1.setPreferredSize(new java.awt.Dimension(1200, 26));
 
         jMenuSolicitudes.setText("Solicitudes");
@@ -444,6 +608,7 @@ public class MainWindow extends javax.swing.JFrame {
         jMenuSolicitudes.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
         IngresodeVehiculo.setText("Ingreso de vehiculos");
+        IngresodeVehiculo.setEnabled(false);
         jMenuSolicitudes.add(IngresodeVehiculo);
 
         jMenuBar1.add(jMenuSolicitudes);
@@ -453,6 +618,7 @@ public class MainWindow extends javax.swing.JFrame {
         jMenuMantenimiento.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
         asignacionMecanico.setText("Asignacion de Mecanico");
+        asignacionMecanico.setEnabled(false);
         jMenuMantenimiento.add(asignacionMecanico);
 
         jMenuBar1.add(jMenuMantenimiento);
@@ -462,14 +628,11 @@ public class MainWindow extends javax.swing.JFrame {
         jMenuFacturacion.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
         registroProductos.setText("Registro de productos utilizados");
-        registroProductos.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                registroProductosActionPerformed(evt);
-            }
-        });
+        registroProductos.setEnabled(false);
         jMenuFacturacion.add(registroProductos);
 
         facturacionSrevicio.setText("Facturacion del Servicio");
+        facturacionSrevicio.setEnabled(false);
         jMenuFacturacion.add(facturacionSrevicio);
 
         jMenuBar1.add(jMenuFacturacion);
@@ -480,31 +643,43 @@ public class MainWindow extends javax.swing.JFrame {
 
         regProducto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logoProducto.png"))); // NOI18N
         regProducto.setText("Registro de Producto");
+        regProducto.setEnabled(false);
         regProducto.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jMenuRegistros.add(regProducto);
 
         regServicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logoServicio.png"))); // NOI18N
         regServicio.setText("Registro de Servicio");
+        regServicio.setContentAreaFilled(false);
+        regServicio.setEnabled(false);
         jMenuRegistros.add(regServicio);
 
         regMeacanico.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logoMecanico.png"))); // NOI18N
         regMeacanico.setText("Registro de Mecanico");
-        regMeacanico.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                regMeacanicoActionPerformed(evt);
-            }
-        });
+        regMeacanico.setEnabled(false);
         jMenuRegistros.add(regMeacanico);
 
         regSecretarioInv.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logoSecInv.png"))); // NOI18N
         regSecretarioInv.setText("Registro de Sercretario de inventario");
+        regSecretarioInv.setContentAreaFilled(false);
+        regSecretarioInv.setEnabled(false);
         jMenuRegistros.add(regSecretarioInv);
 
         regSecretarioIng.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logoSecreIngresos.png"))); // NOI18N
         regSecretarioIng.setText("Registro de Secretario de ingresos");
+        regSecretarioIng.setEnabled(false);
         jMenuRegistros.add(regSecretarioIng);
 
         jMenuBar1.add(jMenuRegistros);
+
+        jMenuhistorial.setText("Historial");
+        jMenuhistorial.setEnabled(false);
+        jMenuhistorial.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+
+        historialM.setText("Historial de mantenimientos");
+        historialM.setEnabled(false);
+        jMenuhistorial.add(historialM);
+
+        jMenuBar1.add(jMenuhistorial);
 
         jMenu4.setText("Ayuda");
         jMenu4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -518,14 +693,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void registroProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registroProductosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_registroProductosActionPerformed
-
-    private void regMeacanicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regMeacanicoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_regMeacanicoActionPerformed
 
     private void btnMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenuActionPerformed
 
@@ -541,20 +708,49 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_btnMenuActionPerformed
 
     private void btnIngresodeVehiculoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnIngresodeVehiculoMouseExited
-        btnIngresodeVehiculo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ingresoVeh.png")));
+        try {
+
+            if (VariabledeCambio.equals("S.Ingresos_Enable")) {
+                jLabel11.setVisible(false);
+                btnIngresodeVehiculo.setForeground(Color.black);
+            }
+        } catch (Exception exc) {
+
+        }
     }//GEN-LAST:event_btnIngresodeVehiculoMouseExited
 
     private void btnIngresodeVehiculoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnIngresodeVehiculoMouseEntered
+        try {
 
-        btnIngresodeVehiculo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ingresoVehON.png")));
+            if (VariabledeCambio.equals("S.Ingresos_Enable")) {
+                jLabel11.setVisible(true);
+                btnIngresodeVehiculo.setForeground(Color.white);
+            }
+        } catch (Exception exc) {
+        }
     }//GEN-LAST:event_btnIngresodeVehiculoMouseEntered
 
     private void btnAsigMecanicoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAsigMecanicoMouseExited
-        btnAsigMecanico.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/AsigMecanico.png")));
+        try {
+            if (VariabledeCambio.equals("S.Ingresos_Enable")) {
+                jLabel10.setVisible(false);
+                btnAsigMecanico.setForeground(Color.black);
+            }
+        } catch (Exception exc) {
+
+        }
     }//GEN-LAST:event_btnAsigMecanicoMouseExited
 
     private void btnAsigMecanicoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAsigMecanicoMouseEntered
-        btnAsigMecanico.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/AsigMecanicoON.png")));
+        try {
+
+            if (VariabledeCambio.equals("S.Ingresos_Enable")) {
+                jLabel10.setVisible(true);
+                btnAsigMecanico.setForeground(Color.white);
+            }
+        } catch (Exception exc) {
+
+        }
     }//GEN-LAST:event_btnAsigMecanicoMouseEntered
 
     private void btnGerenteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGerenteMouseEntered
@@ -574,7 +770,6 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSecretarioMouseExited
 
     private void btnGerenteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGerenteMouseClicked
-        OcultarMostrarJPanel("ocultar");
         jPanelGerente.setVisible(true);
 
         btnGerente.setVisible(false);
@@ -583,16 +778,6 @@ public class MainWindow extends javax.swing.JFrame {
         jlabel.setVisible(false);
         jlabel2.setVisible(false);
     }//GEN-LAST:event_btnGerenteMouseClicked
-
-    private void jButtonCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonCloseMouseClicked
-        jPanelGerente.setVisible(false);
-
-        btnGerente.setVisible(true);
-        btnSecretario.setVisible(true);
-
-        jlabel.setVisible(true);
-        jlabel2.setVisible(true);
-    }//GEN-LAST:event_jButtonCloseMouseClicked
 
     private void btnSecretarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSecretarioMouseClicked
         OcultarMostrarJPanel("ocultar");
@@ -605,20 +790,199 @@ public class MainWindow extends javax.swing.JFrame {
         jlabel2.setVisible(false);
     }//GEN-LAST:event_btnSecretarioMouseClicked
 
-    private void jButtonClose2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonClose2MouseClicked
+    private void btnlogOutMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnlogOutMouseEntered
+        btnlogOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logout110px.png")));
+    }//GEN-LAST:event_btnlogOutMouseEntered
 
-        jPanelSecretario.setVisible(false);
+    private void btnlogOutMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnlogOutMouseExited
+        btnlogOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logout100px.png")));
+    }//GEN-LAST:event_btnlogOutMouseExited
+
+    private void btnRegistroPUtilizadoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistroPUtilizadoMouseEntered
+        try {
+            if (VariabledeCambio.equals("S.Ingresos_Enable")) {
+                jLabel9.setVisible(true);
+                btnRegistroPUtilizado.setForeground(Color.white);
+            }
+        } catch (Exception exc) {
+
+        }
+    }//GEN-LAST:event_btnRegistroPUtilizadoMouseEntered
+
+    private void btnRegistroPUtilizadoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistroPUtilizadoMouseExited
+        try {
+            if (VariabledeCambio.equals("S.Ingresos_Enable")) {
+                jLabel9.setVisible(false);
+                btnRegistroPUtilizado.setForeground(Color.black);
+            }
+        } catch (Exception exc) {
+
+        }
+    }//GEN-LAST:event_btnRegistroPUtilizadoMouseExited
+
+    private void btnRegistroServiciosMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistroServiciosMouseEntered
+        try {
+            if (VariabledeCambio.equals("S.Inventario_Enable")) {
+                jLabel6.setVisible(true);
+                btnRegistroServicios.setForeground(Color.white);
+            }
+        } catch (Exception exc) {
+
+        }
+    }//GEN-LAST:event_btnRegistroServiciosMouseEntered
+
+    private void btnRegistroServiciosMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistroServiciosMouseExited
+        try {
+
+            if (VariabledeCambio.equals("S.Inventario_Enable")) {
+                jLabel6.setVisible(false);
+                btnRegistroServicios.setForeground(Color.black);
+            }
+        } catch (Exception exc) {
+
+        }
+    }//GEN-LAST:event_btnRegistroServiciosMouseExited
+
+
+    private void btnHistorialMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnHistorialMouseEntered
+        try {
+            if (gerente != null) {
+                jLabel5.setVisible(true);
+                btnHistorial.setForeground(Color.white);
+            }
+        } catch (Exception exc) {
+
+        }
+    }//GEN-LAST:event_btnHistorialMouseEntered
+
+    private void btnHistorialMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnHistorialMouseExited
+        try {
+            if (gerente != null) {
+                jLabel5.setVisible(false);
+                btnHistorial.setForeground(Color.black);
+            }
+        } catch (Exception exc) {
+
+        }
+    }//GEN-LAST:event_btnHistorialMouseExited
+
+    private void btnCloseSecretarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseSecretarioMouseClicked
+        OcultarMostrarJPanel("ocultar");
+        jPanelGerente.setVisible(false);
 
         btnGerente.setVisible(true);
         btnSecretario.setVisible(true);
 
         jlabel.setVisible(true);
         jlabel2.setVisible(true);
-    }//GEN-LAST:event_jButtonClose2MouseClicked
 
-    private void btnlogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnlogOutActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnlogOutActionPerformed
+        usuarioGerente.setText("");
+        passGerente.setText("");
+
+        //Borrando el texto de todos los coponentes JTextField.
+        JTextField caja;
+        for (int i = 0; i < jPanelSecretario.getComponentCount(); i++) {
+            if (jPanelSecretario.getComponent(i).getClass().getName().equals("javax.swing.JTextField")) {
+                caja = (JTextField) jPanelSecretario.getComponent(i);
+                caja.setText("");
+            }
+        }
+
+    }//GEN-LAST:event_btnCloseSecretarioMouseClicked
+
+    private void btnCloseSecretarioMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseSecretarioMouseEntered
+        btnCloseSecretario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.gif")));
+    }//GEN-LAST:event_btnCloseSecretarioMouseEntered
+
+    private void btnCloseSecretarioMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseSecretarioMouseExited
+        btnCloseSecretario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.jpg")));
+    }//GEN-LAST:event_btnCloseSecretarioMouseExited
+
+    private void btnCloseGerenteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseGerenteMouseClicked
+        OcultarMostrarJPanel("ocultar");
+        jPanelGerente.setVisible(false);
+
+        btnGerente.setVisible(true);
+        btnSecretario.setVisible(true);
+
+        jlabel.setVisible(true);
+        jlabel2.setVisible(true);
+
+        usuarioGerente.setText("");
+        passGerente.setText("");
+    }//GEN-LAST:event_btnCloseGerenteMouseClicked
+
+    private void btnCloseGerenteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseGerenteMouseEntered
+        btnCloseGerente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.gif")));
+    }//GEN-LAST:event_btnCloseGerenteMouseEntered
+
+    private void btnCloseGerenteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseGerenteMouseExited
+        btnCloseGerente.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.jpg")));
+    }//GEN-LAST:event_btnCloseGerenteMouseExited
+
+    private void btnFacturacionServicioMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnFacturacionServicioMouseEntered
+        try {
+            if (VariabledeCambio.equals("S.Ingresos_Enable")) {
+                jLabel8.setVisible(true);
+                btnFacturacionServicio.setForeground(Color.white);
+            }
+        } catch (Exception exc) {
+
+        }
+    }//GEN-LAST:event_btnFacturacionServicioMouseEntered
+
+    private void btnFacturacionServicioMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnFacturacionServicioMouseExited
+        try {
+            if (VariabledeCambio.equals("S.Ingresos_Enable")) {
+                jLabel8.setVisible(false);
+                btnFacturacionServicio.setForeground(Color.black);
+            }
+        } catch (Exception exc) {
+
+        }
+    }//GEN-LAST:event_btnFacturacionServicioMouseExited
+
+    private void btnRegistrodeProductosMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistrodeProductosMouseEntered
+        try {
+            if (VariabledeCambio.equals("S.Inventario_Enable")) {
+                jLabel7.setVisible(true);
+                btnRegistrodeProductos.setForeground(Color.white);
+            }
+        } catch (Exception exc) {
+
+        }
+
+    }//GEN-LAST:event_btnRegistrodeProductosMouseEntered
+
+    private void btnRegistrodeProductosMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRegistrodeProductosMouseExited
+        try {
+            if (VariabledeCambio.equals("S.Inventario_Enable")) {
+                jLabel7.setVisible(false);
+
+                btnRegistrodeProductos.setForeground(Color.black);
+            }
+        } catch (Exception exc) {
+
+        }
+    }//GEN-LAST:event_btnRegistrodeProductosMouseExited
+
+    private void btnlogOutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnlogOutMouseClicked
+
+    }//GEN-LAST:event_btnlogOutMouseClicked
+
+    private void btnlogOutMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnlogOutMousePressed
+        try {
+            ingresoVH.setVisible(false);
+            registroPro.setVisible(false);
+            asignacion.setVisible(false);
+            
+        }catch(Exception exc){
+            
+        }
+        
+        JOptionPane.showMessageDialog(rootPane, "Session Cerrada");
+
+    }//GEN-LAST:event_btnlogOutMousePressed
 
     /**
      * @param args the command line arguments
@@ -629,11 +993,14 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem acerca;
     private javax.swing.JMenuItem asignacionMecanico;
     private javax.swing.JButton btnAsigMecanico;
+    private javax.swing.JButton btnCloseGerente;
+    private javax.swing.JButton btnCloseSecretario;
     private javax.swing.JButton btnFacturacionServicio;
-    private javax.swing.JButton btnFacturacionServicio1;
     private javax.swing.JButton btnGerente;
+    private javax.swing.JButton btnHistorial;
     private javax.swing.JButton btnIngresodeVehiculo;
     private javax.swing.JButton btnMenu;
+    private javax.swing.JButton btnRegistroPUtilizado;
     private javax.swing.JButton btnRegistroServicios;
     private javax.swing.JButton btnRegistrodeProductos;
     private javax.swing.JButton btnSecretario;
@@ -641,19 +1008,26 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton entrarGerente;
     private javax.swing.JButton entrarSecretario;
     private javax.swing.JMenuItem facturacionSrevicio;
-    private javax.swing.JButton jButtonClose;
-    private javax.swing.JButton jButtonClose2;
+    private javax.swing.JMenuItem historialM;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu jMenuFacturacion;
     private javax.swing.JMenu jMenuMantenimiento;
     private javax.swing.JMenu jMenuRegistros;
     private javax.swing.JMenu jMenuSolicitudes;
+    private javax.swing.JMenu jMenuhistorial;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanelGerente;
@@ -664,8 +1038,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel jlabel4;
     private javax.swing.JPanel jpanel_mesa;
     private javax.swing.JLabel nombreSession;
-    private javax.swing.JTextField passGerente;
-    private javax.swing.JTextField passSecretario;
+    private javax.swing.JPasswordField passGerente;
+    private javax.swing.JPasswordField passSecretario;
     private javax.swing.JMenuItem regMeacanico;
     private javax.swing.JMenuItem regProducto;
     private javax.swing.JMenuItem regSecretarioIng;
@@ -678,11 +1052,9 @@ public class MainWindow extends javax.swing.JFrame {
 
     public class IngresoVehiculoListener implements ActionListener {
 
-        private IngresoVehiculosUI ingresoVH = null;
-
         public void actionPerformed(ActionEvent evt) {
 
-            if (this.ingresoVH == null) {
+            if (ingresoVH == null) {
                 try {
 
                     ingresoVH = new IngresoVehiculosUI(taller, secretario, reporte);
@@ -691,10 +1063,32 @@ public class MainWindow extends javax.swing.JFrame {
                     Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 jDesktopPane1.add(ingresoVH);
+
+                timerIngresoVeh = new Timer(100, (ActionListener) timerIngresoVeh);
+                timerIngresoVeh.start();
+
+                timerIngresoVeh.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent ae) {
+
+                        if (ingresoVH.getIsActive() == true) {
+                            btnIngresodeVehiculo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ingresoVehOn.png")));
+                        } else {
+                            btnIngresodeVehiculo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ingresoVeh.png")));
+                        }
+
+                        if (signalCloseButton == true) {
+                            ingresoVH.LimpiandoVentana();
+                            ingresoVH.hide();
+
+                        }
+                    }
+                });
+
             }
 
-            this.ingresoVH.setLocation(((jDesktopPane1.getWidth() - ingresoVH.getWidth()) / 2) + 140,
-                    ((jDesktopPane1.getHeight() - ingresoVH.getHeight()) / 2) + 10);
+            ingresoVH.setLocation(((jDesktopPane1.getWidth() - ingresoVH.getWidth()) / 2) + 140,
+                    ((jDesktopPane1.getHeight() - ingresoVH.getHeight()) / 2) + 30);
             ingresoVH.setVisible(true);
         }
     }
@@ -714,6 +1108,29 @@ public class MainWindow extends javax.swing.JFrame {
                     Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 jDesktopPane1.add(asignacion);
+
+                timerAsigMec = new Timer(100, (ActionListener) timerAsigMec);
+                timerAsigMec.start();
+
+                System.out.println(true);
+
+                timerAsigMec.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent ae) {
+
+                        if (asignacion.getIsActive() == true) {
+                            btnAsigMecanico.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/AsigMecanicoON.png")));
+                        } else {
+                            btnAsigMecanico.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/AsigMecanico.png")));
+                        }
+
+                        if (signalCloseButton == true) {
+                            asignacion.LimpiandoVentana();
+                        }
+                        asignacion.ActualizarComponentes();
+
+                    }
+                });
             }
             this.asignacion.setLocation(((jDesktopPane1.getWidth() - asignacion.getWidth()) / 2),
                     (jDesktopPane1.getHeight() - asignacion.getHeight()) / 2);
@@ -724,7 +1141,7 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
 
-    public class RegistroProductosListener implements ActionListener {
+    public class RegistroProductosUtilizadosListener implements ActionListener {
 
         private RegistroProductosUtilizadosUI registroPro = null;
 
@@ -737,12 +1154,31 @@ public class MainWindow extends javax.swing.JFrame {
                     Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 jDesktopPane1.add(registroPro);
+
+                timerRegiPdtUtilizados = new Timer(100, (ActionListener) timerRegiPdtUtilizados);
+                timerRegiPdtUtilizados.start();
+
+                timerRegiPdtUtilizados.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent ae) {
+                        if (registroPro.getIsActive() == true) {
+                            btnRegistroPUtilizado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/regputilizadosOn.png")));
+                        } else {
+                            btnRegistroPUtilizado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/regputilizadosOff.png")));
+                        }
+
+                        if (signalCloseButton == true) {
+                            registroPro.LimpiandoVentana();
+                            registroPro.dispose();
+                        }
+                    }
+                });
+
             }
 
             this.registroPro.setLocation(((jDesktopPane1.getWidth() - this.registroPro.getWidth()) / 2) + 120,
                     (jDesktopPane1.getHeight() - this.registroPro.getHeight()) / 2);
             registroPro.setVisible(true);
-
         }
     }
 
@@ -754,11 +1190,26 @@ public class MainWindow extends javax.swing.JFrame {
 
             if (this.facturacion == null) {
                 try {
-                    facturacion = new FacturacionServicioUI(taller,secretario);
+                    facturacion = new FacturacionServicioUI(taller, secretario);
                 } catch (Exception ex) {
                     Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 jDesktopPane1.add(facturacion);
+
+                timerFacturacionServ = new Timer(100, (ActionListener) timerFacturacionServ);
+                timerFacturacionServ.start();
+
+                timerFacturacionServ.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent ae) {
+                        if (facturacion.getIsActive() == true) {
+                            btnFacturacionServicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnFactura.png")));
+                        } else {
+                            btnFacturacionServicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnFacturaOff.png")));
+                        }
+                    }
+                });
+
             }
 
             this.facturacion.setLocation(((jDesktopPane1.getWidth() - this.facturacion.getWidth()) / 2) + 120,
@@ -780,64 +1231,8 @@ public class MainWindow extends javax.swing.JFrame {
                 jDesktopPane1.add(this.about);
                 this.about.setLocation(85, 30);
             }
-            this.about.setLocation(360,520);
+            this.about.setLocation(360, 520);
             this.about.setVisible(true);
-        }
-
-    }
-
-    public class LoginGerenteListener implements ActionListener {
-
-        private LoginGerente login = null;
-
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-
-            if (this.login == null) {
-
-                try {
-                    this.login = new LoginGerente(taller);
-                } catch (Exception ex) {
-                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                jDesktopPane1.add(this.login);
-
-            }
-            this.login.setLocation((jDesktopPane1.getWidth() - this.login.getWidth()) / 2,
-                    (jDesktopPane1.getHeight() - this.login.getHeight()) / 2);
-            this.login.setVisible(true);
-
-            RSAnimation.setMoverIzquierda(279, 0, 2, 2, btnMenu);
-            RSAnimation.setMoverIzquierda(5, -280, 2, 2, jPanel1);
-
-        }
-
-    }
-
-    public class LoginSecretarioListener implements ActionListener {
-
-        private LoginSecretario login = null;
-
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-
-            if (this.login == null) {
-
-                try {
-                    this.login = new LoginSecretario(taller);
-                } catch (Exception ex) {
-                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                jDesktopPane1.add(this.login);
-
-            }
-            this.login.setLocation((jDesktopPane1.getWidth() - this.login.getWidth()) / 2,
-                    (jDesktopPane1.getHeight() - this.login.getHeight()) / 2);
-            this.login.setVisible(true);
-
-            RSAnimation.setMoverIzquierda(279, 0, 2, 2, btnMenu);
-            RSAnimation.setMoverIzquierda(5, -280, 2, 2, jPanel1);
-
         }
 
     }
@@ -849,6 +1244,7 @@ public class MainWindow extends javax.swing.JFrame {
         } else if (opcion.equals("ocultar")) {
             jPanelSecretario.setVisible(false);
             jPanelGerente.setVisible(false);
+
         }
     }
 
@@ -859,16 +1255,26 @@ public class MainWindow extends javax.swing.JFrame {
 
             for (Gerente g : taller.getGerentes()) {
                 if (usuarioGerente.getText().trim().equals(g.getUsuario()) && passGerente.getText().trim().equals(g.getPassword())) {
-                    
+
+                    gerente = g;
+
                     usuarioGerente.setText("");
                     passGerente.setText("");
-                    
+
                     OcultarMostrarJPanel("ocultar");
                     nombreSession.setText("Gerente: " + g.getNombres() + g.getApellidos());
                     btnlogOut.setVisible(true);
                     nombreSession.setVisible(true);
-                    ActivarDesactivarComponenetes("si");
-                    
+
+                    jMenuRegistros.setEnabled(true);
+                    regMeacanico.setEnabled(true);
+                    regSecretarioIng.setEnabled(true);
+                    regSecretarioInv.setEnabled(true);
+
+                    jMenuhistorial.setEnabled(true);
+                    historialM.setEnabled(true);
+                    btnHistorial.setEnabled(true);
+
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "Usuario o contraseña incorrectas.");
                 }
@@ -884,116 +1290,176 @@ public class MainWindow extends javax.swing.JFrame {
         public void actionPerformed(ActionEvent ae) {
 
             try {
-                
-                secretario = taller.buscarSecretario(usuarioSecretario.getText().trim());
+
+                secretario = taller.buscarSecretario(usuarioSecretario.getText().trim(), passSecretario.getText().trim());
 
                 if (secretario.getUsuario().equals(usuarioSecretario.getText())
-                        && secretario.getPassword().equals(passSecretario.getText())
-                        && secretario.getTipoDeCargo() == TipoCargo.Inventario) {
-                    
+                        && secretario.getPassword().equals(passSecretario.getText())) {
+
                     usuarioSecretario.setText("");
                     passSecretario.setText("");
 
                     OcultarMostrarJPanel("ocultar");
-                    nombreSession.setText("Secretario(a) de inventario: " + secretario.getNombres()
+                    nombreSession.setText("Secretario(a) de " + secretario.getTipoDeCargo() + ": " + secretario.getNombres()
                             + " " + secretario.getApellidos());
 
-                    btnRegistroServicios.setEnabled(true);
-                    btnRegistrodeProductos.setEnabled(true);
+                    if (secretario.getTipoDeCargo() == TipoCargo.Inventario) {
 
-                    jMenuRegistros.setEnabled(true);
-                    nombreSession.setVisible(true);
-                    btnlogOut.setVisible(true);
+                        VariabledeCambio = "S.Inventario_Enable";
 
-                }
+                        jMenuRegistros.setEnabled(true);
+                        btnRegistroServicios.setEnabled(true);
+                        btnRegistrodeProductos.setEnabled(true);
+                        regProducto.setEnabled(true);
+                        regServicio.setEnabled(true);
 
-                if (secretario.getUsuario().equals(usuarioSecretario.getText())
-                        && secretario.getPassword().equals(passSecretario.getText())
-                        && secretario.getTipoDeCargo() == TipoCargo.Ingresos) {
-                    
-                    usuarioSecretario.setText("");
-                    passSecretario.setText("");
+                    } else if (secretario.getTipoDeCargo() == TipoCargo.Ingresos) {
 
-                    OcultarMostrarJPanel("ocultar");
-                    nombreSession.setText("Secretario(a) de ingresos: " + secretario.getNombres()
-                            + " " + secretario.getApellidos());
+                        VariabledeCambio = "S.Ingresos_Enable";
 
-                    btnIngresodeVehiculo.setEnabled(true);
-                    btnAsigMecanico.setEnabled(true);
-                    btnFacturacionServicio.setEnabled(true);
+                        btnIngresodeVehiculo.setEnabled(true);
+                        btnAsigMecanico.setEnabled(true);
+                        btnRegistroPUtilizado.setEnabled(true);
+                        btnFacturacionServicio.setEnabled(true);
 
-                    jMenuSolicitudes.setEnabled(true);
-                    jMenuMantenimiento.setEnabled(true);
-                    jMenuFacturacion.setEnabled(true);
+                        jMenuSolicitudes.setEnabled(true);
+                        jMenuMantenimiento.setEnabled(true);
+                        jMenuFacturacion.setEnabled(true);
 
-                    
+                        IngresodeVehiculo.setEnabled(true);
+                        asignacionMecanico.setEnabled(true);
+                        facturacionSrevicio.setEnabled(true);
+                        registroProductos.setEnabled(true);
+                    }
+
                     nombreSession.setVisible(true);
                     btnlogOut.setVisible(true);
 
                 }
 
             } catch (Exception ex) {
+//                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(rootPane, ex.getMessage());
             }
         }
     }
 
-    public void ActivarDesactivarComponenetes(String opcion) {
+    public void DesactivarComponenetes() {
 
-        if (opcion.equals("si")) {
-            btnIngresodeVehiculo.setEnabled(true);
-            btnAsigMecanico.setEnabled(true);
-            btnFacturacionServicio.setEnabled(true);
-            btnRegistrodeProductos.setEnabled(true);
-            btnRegistroServicios.setEnabled(true);
+        btnIngresodeVehiculo.setEnabled(false);
+        btnAsigMecanico.setEnabled(false);
+        btnRegistroPUtilizado.setEnabled(false);
+        btnRegistrodeProductos.setEnabled(false);
+        btnRegistroServicios.setEnabled(false);
+        btnFacturacionServicio.setEnabled(false);
+        btnHistorial.setEnabled(false);
 
-            jMenuSolicitudes.setEnabled(true);
-            jMenuMantenimiento.setEnabled(true);
-            jMenuFacturacion.setEnabled(true);
-            jMenuRegistros.setEnabled(true);
+        jMenuSolicitudes.setEnabled(false);
+        jMenuMantenimiento.setEnabled(false);
+        jMenuFacturacion.setEnabled(false);
+        jMenuRegistros.setEnabled(false);
+        jMenuhistorial.setEnabled(false);
+        historialM.setEnabled(false);
 
-        } else if (opcion.equals("no")) {
+        IngresodeVehiculo.setEnabled(false);
+        asignacionMecanico.setEnabled(false);
+        registroProductos.setEnabled(false);
+        regProducto.setEnabled(false);
+        regServicio.setEnabled(false);
+        regSecretarioIng.setEnabled(false);
+        regSecretarioInv.setEnabled(false);
+        regMeacanico.setEnabled(false);
 
-            btnIngresodeVehiculo.setEnabled(false);
-            btnAsigMecanico.setEnabled(false);
-            btnFacturacionServicio.setEnabled(false);
-            btnRegistrodeProductos.setEnabled(false);
-            btnRegistroServicios.setEnabled(false);
-
-            jMenuSolicitudes.setEnabled(false);
-            jMenuMantenimiento.setEnabled(false);
-            jMenuFacturacion.setEnabled(false);
-            jMenuRegistros.setEnabled(false);
-
-        }
-
+//        jLabel5.setEnabled(false);
+//        jLabel6.setEnabled(false);
+//        jLabel7.setEnabled(false);
+//        jLabel8.setEnabled(false);
+//        jLabel9.setEnabled(false);
+//        jLabel10.setEnabled(false);
+//        jLabel11.setEnabled(false);
     }
-    
-    
-    public class RegistroProductoListener implements ActionListener {
 
-        private RegistroProducto registroP = null;
+    public class RegistroProductoListener implements ActionListener {
 
         public void actionPerformed(ActionEvent evt) {
 
-            if (this.registroP == null) {
+            if (registroP == null) {
                 try {
                     registroP = new RegistroProducto(taller);
+
                 } catch (Exception ex) {
                     Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 jDesktopPane1.add(registroP);
+
+                timerRegistrarPdt = new Timer(100, (ActionListener) timerRegistrarPdt);
+                timerRegistrarPdt.start();
+
+                timerRegistrarPdt.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent ae) {
+                        if (registroP.getIsActive() == true) {
+                            btnRegistrodeProductos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logoProductoOn.png")));
+                        } else {
+                            btnRegistrodeProductos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/logoProductoOff.png")));
+                        }
+                    }
+                });
+
             }
 
-            this.registroP.setLocation(((jDesktopPane1.getWidth() - this.registroP.getWidth()) / 2) + 120,
-                    (jDesktopPane1.getHeight() - this.registroP.getHeight()) / 2);
-            this.registroP.setVisible(true);
+            registroP.setLocation(((jDesktopPane1.getWidth() - registroP.getWidth()) / 2) + 120,
+                    (jDesktopPane1.getHeight() - registroP.getHeight()) / 2 + 30);
+            registroP.setVisible(true);
+
+        }
+
+    }
+
+    public class HistorialMantListener implements ActionListener {
+
+        private HistorialMantenimientos historialM = null;
+
+        public void actionPerformed(ActionEvent evt) {
+
+            if (this.historialM == null) {
+                try {
+                    historialM = new HistorialMantenimientos(taller);
+                } catch (Exception ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                jDesktopPane1.add(historialM);
+
+                timerHistory = new Timer(100, (ActionListener) timerHistory);
+                timerHistory.start();
+
+                timerHistory.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent ae) {
+                        if (historialM.getIsActive() == true) {
+                            btnHistorial.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/historyOn.png")));
+                        } else {
+                            btnHistorial.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/historyOff.png")));
+                        }
+
+                        if (signalCloseButton == true) {
+                            historialM.LimpiandoVentana();
+                            historialM.hide();
+
+                        }
+
+                        historialM.ActualizarComponentes();
+
+                    }
+                });
+
+            }
+
+            this.historialM.setLocation(((jDesktopPane1.getWidth() - this.historialM.getWidth()) / 2) + 120,
+                    (jDesktopPane1.getHeight() - this.historialM.getHeight()) / 2);
+            this.historialM.setVisible(true);
 
         }
     }
-    
-    
-    
 
 }
-

@@ -12,13 +12,16 @@ import Source.Servicio;
 import Source.Taller;
 import Source.Vehiculo;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -30,13 +33,20 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
     private Taller taller;
     private Vehiculo vehicle;
     private Producto producto;
-    private Consumo consumo = new Consumo();
+    private Consumo c = new Consumo();
     private Mantenimiento mantenimiento = new Mantenimiento();
+
+    private boolean isActive;
 
     public RegistroProductosUtilizadosUI(Taller taller) throws Exception {
 
         this.taller = taller;
         initComponents();
+
+        //      Codigo para undercoder un jinternal Frame
+        this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        BasicInternalFrameUI bui = (BasicInternalFrameUI) this.getUI();
+        bui.setNorthPane(null);
 
         jSpinnerCantidad.setValue(1);
 
@@ -49,6 +59,12 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
         BuscarProductoListener buscarPro = new BuscarProductoListener();
         this.buscarProd.addActionListener(buscarPro);
         this.codigo.addActionListener(buscarPro);
+
+        jTableConsumos.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+        jTableConsumos.getTableHeader().setOpaque(false);
+        jTableConsumos.getTableHeader().setBackground(new Color(32, 136, 203));
+        jTableConsumos.getTableHeader().setForeground(new Color(255, 255, 255));
+        jTableConsumos.setRowHeight(25);
 
         this.jTableConsumos.setModel(new AbstractTableModel() {
 
@@ -109,7 +125,7 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
                 switch (columnIndex) {
 
                     case 0:
-                        return mantenimiento.getConsumos().get(rowIndex).getIdentificacion();
+                        return mantenimiento.getConsumos().get(rowIndex).getPk();
                     case 1:
                         return mantenimiento.getConsumos().get(rowIndex).getProducto().getNombre();
                     case 2:
@@ -136,48 +152,25 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
             }
         });
 
-        btnGuardarCons.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-
-                try {
-                    
-                    taller.EditConsumoMantenimiento(mantenimiento);
-                    JOptionPane.showMessageDialog(rootPane, "Consumos registrados satisfactoriamente.");
-                    btnGuardarCons.setEnabled(false);
-                    btnGuardarCons.setText("Consumos Guardados");
-                    jTableConsumos.setForeground(Color.white);
-                    jTableConsumos.setBackground(new Color(143,212,0));
-                } catch (Exception ex) {
-                    Logger.getLogger(RegistroProductosUtilizadosUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            }
-        });
-
         btnRemoveConsumo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 try {
 
-                    long ident = (Long) jTableConsumos.getValueAt(jTableConsumos.getSelectedRow(), 0);
-                    Consumo consumo = mantenimiento.BuscarConsumo(ident);
-
+                    long pk = (Long) jTableConsumos.getValueAt(jTableConsumos.getSelectedRow(), 0);
+                    c = mantenimiento.BuscarConsumo(pk);
+//
                     int opcion = JOptionPane.showConfirmDialog(rootPane, "\n¿Desea eliminar el consumo?");
 
                     if (opcion == JOptionPane.YES_OPTION) {
-
-                        mantenimiento.RemoveConsumo(consumo);
-                       jTableConsumos.updateUI();
+//
+                        mantenimiento.RemoveConsumo(c);
+                        taller.EditMantenimientoCons(mantenimiento);
+                        taller.RemoveConsumo(c);
+                        jTableConsumos.updateUI();
                         JOptionPane.showMessageDialog(rootPane, "Consumo eliminado satisfactoriamente.");
-                        btnGuardarCons.setEnabled(true);
-//                        jTableConsumos.updateUI();
-
+//
                     }
-
-//                    System.out.println(mantenimiento.getConsumos());
-//                    Consumo c = mantenimiento.getConsumos().get((int) jTableConsumos.getValueAt(jTableConsumos.getSelectedColumn(),jTableConsumos.getSelectedRow()));
-//                    System.out.println(c.getProducto());
 //                    
                 } catch (Exception ex) {
                     Logger.getLogger(RegistroProductosUtilizadosUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -191,39 +184,37 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
             public void actionPerformed(ActionEvent ae) {
 
                 try {
+                    Servicio s = (Servicio) jlistServices.getSelectedValue();
 
-                    consumo = new Consumo();
-
-                    if (jlistServices.getSelectedValue() == null) {
-                        throw new Exception("Se debe seleccionar el servicio .");
+                    Consumo c = new Consumo((int) jSpinnerCantidad.getValue(), (Servicio) s, producto);
+                    if (c == null) {
+                        throw new Exception("Porfavor selecciones el servicio.");
                     }
 
-                    int cantidad = (Integer) jSpinnerCantidad.getValue();
-                    Servicio servicio = (Servicio) jlistServices.getSelectedValue();
-
-                    Calendar c = Calendar.getInstance();
-
-                    consumo.setIdentificacion((long) (c.getTimeInMillis() % 1000));
-                    consumo.setCantidad(cantidad);
-                    consumo.setServicio(servicio);
-                    consumo.setProducto(producto);
-
-                    mantenimiento.AddConsumo(consumo);
-                    btnGuardarCons.setEnabled(true);
+                    mantenimiento.AddConsumo(c);
+                    taller.AddConsumo(c);
+                    taller.EditMantenimientoCons(mantenimiento);
                     JOptionPane.showMessageDialog(rootPane, "Consumo añadido satisfactoriamente.");
                     jTableConsumos.updateUI();
-                    jTableConsumos.setBackground(Color.white);
-                    jTableConsumos.setForeground(Color.black);
+                    System.out.println(c);
 
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
-                    Logger.getLogger(RegistroProductosUtilizadosUI.class.getName()).log(Level.SEVERE, null, ex);
+//                    Logger.getLogger(RegistroProductosUtilizadosUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
         }
         );
 
+    }
+
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     /**
@@ -235,6 +226,9 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel5 = new javax.swing.JPanel();
+        btnClose = new javax.swing.JButton();
+        btnMinimize = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         placa = new javax.swing.JTextField();
@@ -249,9 +243,6 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jlistServices = new javax.swing.JList();
-        jPanel6 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        mecanicoAsginado = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         codigo = new javax.swing.JTextField();
@@ -268,31 +259,82 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
         jTableConsumos = new javax.swing.JTable();
         btnRemoveConsumo = new javax.swing.JButton();
         btnActualizar = new javax.swing.JButton();
-        btnGuardarCons = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        mecanicoAsginado = new javax.swing.JTextField();
 
         setClosable(true);
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         setIconifiable(true);
-        setPreferredSize(new java.awt.Dimension(692, 673));
+        setPreferredSize(new java.awt.Dimension(684, 677));
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel5.setLayout(null);
+
+        btnClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.jpg"))); // NOI18N
+        btnClose.setContentAreaFilled(false);
+        btnClose.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnClose.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnCloseMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnCloseMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnCloseMouseExited(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                btnCloseMousePressed(evt);
+            }
+        });
+        jPanel5.add(btnClose);
+        btnClose.setBounds(28, 16, 28, 28);
+
+        btnMinimize.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/minimize35px.png"))); // NOI18N
+        btnMinimize.setBorderPainted(false);
+        btnMinimize.setContentAreaFilled(false);
+        btnMinimize.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnMinimize.setFocusPainted(false);
+        btnMinimize.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnMinimizeMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnMinimizeMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnMinimizeMouseExited(evt);
+            }
+        });
+        jPanel5.add(btnMinimize);
+        btnMinimize.setBounds(60, 14, 30, 30);
+
+        jLabel1.setFont(new java.awt.Font("Dubai", 1, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Registro de Productos Utilizados");
-        jLabel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jLabel1.setText("REGISTRO DE PRODUCTOS SOLICITADOS");
+        jLabel1.setOpaque(true);
+        jPanel5.add(jLabel1);
+        jLabel1.setBounds(20, 10, 630, 40);
 
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Vehiculo"));
+
+        placa.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
         jLabel3.setText("Marca");
 
         marca.setEditable(false);
+        marca.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         jLabel4.setText("Tipo");
 
         tipo.setEditable(false);
+        tipo.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         jLabel5.setText("Linea");
 
         linea.setEditable(false);
+        linea.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         buscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/searchVector22px.png"))); // NOI18N
         buscar.setBorderPainted(false);
@@ -315,39 +357,46 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
                     .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(marca))
+                    .addComponent(jLabel3)
+                    .addComponent(marca, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(linea, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addContainerGap())
+                    .addComponent(jLabel5)
+                    .addComponent(linea, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel7))
-                .addGap(5, 5, 5)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(placa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(marca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(tipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(linea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(2, 2, 2))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel7))
+                        .addGap(5, 5, 5)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(placa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(marca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))
+                        .addGap(5, 5, 5)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(tipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(linea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap())
         );
 
+        jPanel5.add(jPanel1);
+        jPanel1.setBounds(20, 60, 630, 81);
+
+        jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Servicios Solicitados"));
 
         jScrollPane1.setViewportView(jlistServices);
@@ -356,59 +405,56 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(jScrollPane1)
-                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 594, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(90, 90, 90))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        jLabel6.setText("Mecánico Asignado:");
-
-        mecanicoAsginado.setEditable(false);
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 103, Short.MAX_VALUE)
-                .addComponent(mecanicoAsginado, javax.swing.GroupLayout.PREFERRED_SIZE, 380, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(23, 23, 23))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(mecanicoAsginado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+        jPanel5.add(jPanel4);
+        jPanel4.setBounds(20, 180, 630, 143);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Producto a Registrar"));
 
         jLabel8.setText("Código");
 
+        codigo.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+
         jLabel9.setText("Nombre");
 
         nombre.setEditable(false);
+        nombre.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         jLabel10.setText("Costo");
 
         costo.setEditable(false);
+        costo.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         jLabel11.setText("Cantidad");
 
+        jSpinnerCantidad.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+
+        btnAgregarConsumo.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        btnAgregarConsumo.setForeground(new java.awt.Color(255, 255, 255));
+        btnAgregarConsumo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnBlueDegradado.jpg"))); // NOI18N
         btnAgregarConsumo.setText("Agregar Consumo");
+        btnAgregarConsumo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAgregarConsumo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnAgregarConsumo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnAgregarConsumoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnAgregarConsumoMouseExited(evt);
+            }
+        });
 
         buscarProd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/searchVector22px.png"))); // NOI18N
         buscarProd.setBorderPainted(false);
@@ -428,26 +474,23 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
                 .addComponent(buscarProd, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addComponent(jLabel9))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(nombre, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(19, 19, 19)
-                                .addComponent(jLabel9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(nombre)
-                                .addGap(18, 18, 18)))
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(costo, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel10))
+                            .addComponent(jLabel10)
+                            .addComponent(costo, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSpinnerCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel11)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(207, 207, 207)
-                        .addComponent(btnAgregarConsumo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                            .addComponent(jLabel11)
+                            .addComponent(jSpinnerCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnAgregarConsumo, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -459,19 +502,22 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(codigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(jLabel9)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel10)
-                                .addComponent(jLabel11))
-                            .addGap(7, 7, 7)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(costo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(nombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jSpinnerCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(buscarProd))
+                        .addComponent(nombre, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(buscarProd)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel11))
+                        .addGap(7, 7, 7)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(costo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSpinnerCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(6, 6, 6)
-                .addComponent(btnAgregarConsumo))
+                .addComponent(btnAgregarConsumo, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
+
+        jPanel5.add(jPanel2);
+        jPanel2.setBounds(20, 330, 630, 104);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Consumos Registrados"));
 
@@ -486,85 +532,156 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTableConsumos.setGridColor(new java.awt.Color(255, 255, 255));
+        jTableConsumos.setOpaque(false);
+        jTableConsumos.setSelectionBackground(new java.awt.Color(250, 76, 98));
+        jTableConsumos.getTableHeader().setResizingAllowed(false);
         jScrollPane2.setViewportView(jTableConsumos);
 
+        btnRemoveConsumo.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        btnRemoveConsumo.setForeground(new java.awt.Color(255, 255, 255));
+        btnRemoveConsumo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnRemoveDegradado.png"))); // NOI18N
         btnRemoveConsumo.setText("Remover Consumo");
+        btnRemoveConsumo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnRemoveConsumo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnRemoveConsumo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnRemoveConsumoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnRemoveConsumoMouseExited(evt);
+            }
+        });
 
+        btnActualizar.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        btnActualizar.setForeground(new java.awt.Color(255, 255, 255));
+        btnActualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnGreenDegradadoInvert.jpg"))); // NOI18N
         btnActualizar.setText("Actualizar");
-
-        btnGuardarCons.setText("Guardar Consumos");
-        btnGuardarCons.setEnabled(false);
+        btnActualizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnActualizar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnActualizar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnActualizarMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnActualizarMouseExited(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 595, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(89, 89, 89))
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(btnRemoveConsumo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnActualizar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnGuardarCons)))
-                .addContainerGap())
+                .addContainerGap()
+                .addComponent(btnRemoveConsumo, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnRemoveConsumo)
-                    .addComponent(btnActualizar)
-                    .addComponent(btnGuardarCons))
-                .addGap(0, 8, Short.MAX_VALUE))
+                    .addComponent(btnRemoveConsumo, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jPanel5.add(jPanel3);
+        jPanel3.setBounds(20, 450, 630, 180);
+
+        jLabel6.setText("Mecánico Asignado:");
+        jPanel5.add(jLabel6);
+        jLabel6.setBounds(40, 150, 114, 16);
+
+        mecanicoAsginado.setEditable(false);
+        mecanicoAsginado.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
+        jPanel5.add(mecanicoAsginado);
+        mecanicoAsginado.setBounds(180, 150, 470, 22);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(16, 16, 16))
+            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 668, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(8, 8, 8)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(2, 2, 2)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 20, Short.MAX_VALUE))
+            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 641, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnAgregarConsumoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarConsumoMouseEntered
+        btnAgregarConsumo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnBlueDegradadoInvert.jpg")));
+    }//GEN-LAST:event_btnAgregarConsumoMouseEntered
+
+    private void btnAgregarConsumoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAgregarConsumoMouseExited
+        btnAgregarConsumo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnBlueDegradado.jpg")));
+    }//GEN-LAST:event_btnAgregarConsumoMouseExited
+
+    private void btnCloseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseMouseClicked
+        this.hide();
+        isActive = false;
+        LimpiandoVentana();
+    }//GEN-LAST:event_btnCloseMouseClicked
+
+    private void btnCloseMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseMouseEntered
+        btnClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.gif")));
+    }//GEN-LAST:event_btnCloseMouseEntered
+
+    private void btnCloseMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseMouseExited
+        btnClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.jpg")));
+    }//GEN-LAST:event_btnCloseMouseExited
+
+    private void btnRemoveConsumoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRemoveConsumoMouseEntered
+        btnRemoveConsumo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnBlueCancelDegradadoInvert.jpg")));
+    }//GEN-LAST:event_btnRemoveConsumoMouseEntered
+
+    private void btnRemoveConsumoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnRemoveConsumoMouseExited
+        btnRemoveConsumo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnBlueCancelDegradado.jpg")));
+    }//GEN-LAST:event_btnRemoveConsumoMouseExited
+
+    private void btnActualizarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnActualizarMouseEntered
+        btnActualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnGreenDegradado.jpg")));
+    }//GEN-LAST:event_btnActualizarMouseEntered
+
+    private void btnActualizarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnActualizarMouseExited
+        btnActualizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/btnGreenDegradadoInvert.jpg")));
+    }//GEN-LAST:event_btnActualizarMouseExited
+
+    private void btnCloseMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCloseMousePressed
+
+    }//GEN-LAST:event_btnCloseMousePressed
+
+    private void btnMinimizeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMinimizeMouseClicked
+        isActive = true;
+        setVisible(false);
+    }//GEN-LAST:event_btnMinimizeMouseClicked
+
+    private void btnMinimizeMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMinimizeMouseEntered
+        btnMinimize.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/minimize35pxOff.png")));
+    }//GEN-LAST:event_btnMinimizeMouseEntered
+
+    private void btnMinimizeMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnMinimizeMouseExited
+        btnMinimize.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/minimize35px.png")));
+    }//GEN-LAST:event_btnMinimizeMouseExited
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;
     private javax.swing.JButton btnAgregarConsumo;
-    private javax.swing.JButton btnGuardarCons;
+    private javax.swing.JButton btnClose;
+    private javax.swing.JButton btnMinimize;
     private javax.swing.JButton btnRemoveConsumo;
     private javax.swing.JButton buscar;
     private javax.swing.JButton buscarProd;
@@ -584,7 +701,7 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSpinner jSpinnerCantidad;
@@ -647,7 +764,7 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
             } catch (Exception ex) {
                 modeloList.clear();
                 JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
-                Logger.getLogger(RegistroProductosUtilizadosUI.class.getName()).log(Level.SEVERE, null, ex);
+//                Logger.getLogger(RegistroProductosUtilizadosUI.class.getName()).log(Level.SEVERE, null, ex);
                 jTableConsumos.updateUI();
             }
 
@@ -673,6 +790,35 @@ public class RegistroProductosUtilizadosUI extends javax.swing.JInternalFrame {
 
         }
 
+    }
+
+    public void LimpiandoVentana() {
+        LimpiarCampos();
+        modeloList.clear();
+        c = new Consumo();
+        this.hide();
+        mantenimiento = new Mantenimiento();
+        jTableConsumos.updateUI();
+
+    }
+
+    public void LimpiarCampos() {
+        LimpiandoLosJTextField(jPanel5);
+        LimpiandoLosJTextField(jPanel1);
+        LimpiandoLosJTextField(jPanel2);
+        LimpiandoLosJTextField(jPanel3);
+        LimpiandoLosJTextField(jPanel4);
+    }
+
+    //Borrando el texto de todos los coponentes JTextField.
+    public void LimpiandoLosJTextField(JPanel panel) {
+        JTextField caja;
+        for (int i = 0; i < panel.getComponentCount(); i++) {
+            if (panel.getComponent(i).getClass().getName().equals("javax.swing.JTextField")) {
+                caja = (JTextField) panel.getComponent(i);
+                caja.setText("");
+            }
+        }
     }
 
 }

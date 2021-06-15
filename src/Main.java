@@ -12,13 +12,14 @@ import Source.Taller;
 import Source.TipoCargo;
 import Source.TipoVehiculo;
 import Source.Vehiculo;
+import javax.swing.Timer;
 
 /**
  * @author JulianDiaz
  */
 public class Main {
 
-    public static void main(String args[]) throws Exception {
+public static void main(String args[]) throws Exception {
         
         Taller taller = new Taller(8990123L, "JDMOTOS.SA");
 
@@ -30,7 +31,7 @@ public class Main {
         Mecanico mecanico2 = new Mecanico(1002,"lucasRo89","luca123","luca2001@hotmail.com",Disponibilidad.disponible,298764L, "Lucas Rosero", "Guevara",Genero.Masculino, 247583L);
         Mecanico mecanico3 = new Mecanico(1003,"simpson98","homero123","homero1993@hotmail.com",Disponibilidad.disponible,1006341248L, "Homero", "Simpson",Genero.Masculino, 247583L);
 
-        Gerente g1 = new Gerente("julian.3001@hotmail.com", "jdiaz93", "jhoan_93", 1006341244, "Julian Andres", "Diaz", Genero.Masculino, 2873123);
+        Gerente g1 = new Gerente("julian.3001@hotmail.com", "jdiaz", "123", 1006341244, "Julian Andres", "Diaz", Genero.Masculino, 2873123);
         
         Vehiculo veh1 = new Vehiculo("RXT-540", "Mazda", "RX-7", (short) 2016, TipoVehiculo.Automovil, c1);
         Vehiculo veh2 = new Vehiculo("WDR-123", "Chevrolet", "Spark GT", (short) 2008, TipoVehiculo.Motocarro, c2);
@@ -50,8 +51,9 @@ public class Main {
         
         Secretario s = new Secretario("jaimesito.diaz@hotmail.com", "jaime02", "123", TipoCargo.Inventario, 1006542211, "Jaime", "Diaz", Genero.Masculino, 290831);
         Secretario s1 = new Secretario("laura.gonza@hotmail.com", "laura02", "123", TipoCargo.Ingresos, 1006542212, "Laura", "Gonzales", Genero.Femenino, 290832);
-////
+        
 //        taller.addSecretario(s);        
+//        taller.addSecretario(s1);        
 //        taller.addGerente(g1);
 //
 //         
@@ -81,7 +83,7 @@ public class Main {
         
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }

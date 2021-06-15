@@ -5,6 +5,7 @@ import java.util.Calendar;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,19 +18,18 @@ import javax.persistence.OneToOne;
 public class Consumo implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long pk;
-
-    @Column(nullable = false)
-    private long identificacion;
 
     @Column(nullable = false)
     private int cantidad;
 
-    @OneToOne(cascade = CascadeType.ALL)
+//    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER)
     private Servicio servicio;
 
-    @OneToOne(cascade = CascadeType.ALL)
+//    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne (fetch = FetchType.EAGER)
     private Producto producto;
 
     public Consumo() {
@@ -41,15 +41,6 @@ public class Consumo implements Serializable {
 
     public void setPk(long pk) {
         this.pk = pk;
-    }
-
-    public long getIdentificacion() {
-        return identificacion;
-    }
-
-    public void setIdentificacion(long identificacion) {
-        
-        this.identificacion = identificacion;
     }
     
     

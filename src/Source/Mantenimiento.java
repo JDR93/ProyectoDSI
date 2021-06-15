@@ -159,7 +159,14 @@ public void setMecanico(Mecanico mecanico) throws IllegalArgumentException {
     }
     
     public void RemoveConsumo(Consumo consumo){
+        costoTotal -= consumo.getProducto().getCosto();
+        costoProductos -= consumo.getProducto().getCosto();
+        
         consumos.remove(consumo);
+    }
+    
+    public void RemoveServicio(Servicio servicio){
+        servicios.remove(servicio);
     }
 
     public void AddConsumo(Consumo consumo) {
@@ -200,9 +207,9 @@ public void setMecanico(Mecanico mecanico) throws IllegalArgumentException {
         return null;
     }
     
-    public Consumo BuscarConsumo(long ident){
+    public Consumo BuscarConsumo(long pk){
         for(Consumo c : consumos){
-            if(c.getIdentificacion()==ident){
+            if(c.getPk()==pk){
                 return c;
             }
         }
